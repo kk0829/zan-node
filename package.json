@@ -1,0 +1,55 @@
+{
+  "name": "zan-node",
+  "version": "0.0.1",
+  "description": "Zan Node Framework",
+  "main": "./lib/Zan.js",
+  "author": "kk",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:youzan/zan-node.git"
+  },
+  "license": "MIT",
+  "scripts": {
+    "build": "babel src -d lib",
+    "build:watch": "npm run build -- --watch",
+    "test": "nyc ava --verbose",
+    "test:watch": "nyc ava --verbose --watch",
+    "report": "nyc report --reporter=html"
+  },
+  "ava": {
+    "files": [
+      "./test/**/*.js"
+    ],
+    "match": [],
+    "require": [
+      "babel-register",
+      "babel-polyfill"
+    ],
+    "babel": "inherit"
+  },
+  "dependencies": {
+    "boxen": "1.0.0",
+    "co": "4.6.0",
+    "ip": "1.1.5",
+    "koa": "2.2.0",
+    "koa-body": "1.6.0",
+    "koa-helmet": "2.0.0",
+    "koa-log4": "2.1.0",
+    "koa-router": "7.1.1",
+    "koa-static": "3.0.0",
+    "koa-swig": "2.2.1",
+    "lodash": "4.17.4",
+    "ua-parser-js": "0.7.12",
+    "validator": "8.0.0",
+    "xss": "0.3.3"
+  },
+  "devDependencies": {
+    "ava": "0.20.0",
+    "babel-cli": "6.24.1",
+    "babel-preset-env": "1.6.0",
+    "nyc": "11.0.3"
+  },
+  "engines": {
+    "node": ">= 6.10.0"
+  }
+}
