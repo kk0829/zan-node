@@ -32,6 +32,10 @@ module.exports = function (config) {
                 return linkStr;
             }
         });
+        ctx.setState({
+            loadJs: ctx.getState('loadScript'),
+            loadCss: ctx.getState('loadStyle')
+        });
         await next();
     };
 };
