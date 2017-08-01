@@ -12,7 +12,7 @@ module.exports = function (config) {
                 const src = (NODE_ENV === 'development' && !vendor)
                     ? `/${realKey}.js`
                     : (vendor ? `${CDN_PATH}/${realKey}` : `${CDN_PATH}/${realVersionJs[realKey]}`);
-                let scriptStr = `<script onerror="_cdnFallback(this)" src="${src}" charset="utf-8"`;
+                let scriptStr = `<script src="${src}" charset="utf-8"`;
                 scriptStr += ifAsync ? ' async ' : '';
                 scriptStr += crossorigin ? ' crossorigin="anonymous" ' : '';
                 scriptStr += '></script>';
