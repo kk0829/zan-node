@@ -64,7 +64,7 @@ class Validator {
     }
 
     // check if the string is an email.
-    required(str, msg = '参数不能为空', code = 12345) {
+    required(str = '', msg = '参数不能为空', code = 12345) {
         str = str.trim();
         if (!str) {
             throw new ParamsError(code, msg);
