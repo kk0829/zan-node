@@ -48,6 +48,14 @@ module.exports = async(ctx, next) => {
             msg
         };
     };
+    ctx.json = (status, data) => {
+        ctx.body = {
+            code: status.code,
+            msg: status.msg,
+            data
+        };
+        return;
+    };
 
     await next();
 };

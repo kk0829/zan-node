@@ -4,7 +4,6 @@ import koaHelmet from 'koa-helmet';
 import code from '../middlewares/code';
 import zanConfig from '../middlewares/config';
 import state from '../middlewares/state';
-import zanReturn from '../middlewares/return';
 import seo from '../middlewares/seo';
 import render from '../middlewares/render';
 import log from '../middlewares/log';
@@ -44,9 +43,6 @@ module.exports = function (config) {
     }, {
         name: 'state',
         fn: state
-    }, {
-        name: 'return',
-        fn: zanReturn
     }, {
         name: 'seo',
         fn: seo({
