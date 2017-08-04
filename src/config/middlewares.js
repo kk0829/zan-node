@@ -3,7 +3,6 @@ import zanStatic from '../middlewares/static';
 import koaHelmet from 'koa-helmet';
 import code from '../middlewares/code';
 import zanConfig from '../middlewares/config';
-import state from '../middlewares/state';
 import seo from '../middlewares/seo';
 import render from '../middlewares/render';
 import log from '../middlewares/log';
@@ -40,9 +39,6 @@ module.exports = function (config) {
             path: config.CONFIG_PATH,
             NODE_ENV: config.NODE_ENV
         })
-    }, {
-        name: 'state',
-        fn: state
     }, {
         name: 'seo',
         fn: seo({
