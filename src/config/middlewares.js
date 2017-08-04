@@ -12,6 +12,7 @@ import body from '../middlewares/body';
 import xss from '../middlewares/xss';
 import mixin from '../middlewares/mixin';
 import loader from '../middlewares/loader';
+import nunjucks from '../middlewares/nunjucks';
 
 module.exports = function (config) {
     return [{
@@ -59,10 +60,13 @@ module.exports = function (config) {
         })
     }, {
         name: 'render',
-        fn: render({
-            viewPath: config.VIEW_PATH,
-            extraConfig: config.VIEW_EXTRA_DATA
-        })
+        fn: nunjucks(config)
+    // }, {
+    //     name: 'render',
+    //     fn: render({
+    //         viewPath: config.VIEW_PATH,
+    //         extraConfig: config.VIEW_EXTRA_DATA
+    //     })
     }, {
         name: 'log',
         fn: log()
