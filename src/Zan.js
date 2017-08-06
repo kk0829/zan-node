@@ -57,6 +57,7 @@ class Zan {
         }
         this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
         this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
+        this.config.ZAN_VERSION = pkg.version;
         let VERSION_LIST = this.config.VERSION_LIST || [];
         delete this.config.VERSION_LIST;
         this.config = defaultsDeep({}, config, this.defaultConfig);
