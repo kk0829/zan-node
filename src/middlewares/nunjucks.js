@@ -34,11 +34,17 @@ module.exports = function (config) {
 
         return linkStr;
     };
-    const inlineJs = function(key) {
+    const inlineJs = function (key) {
         let result = '<script>';
         const SERVER_ROOT = config.SERVER_ROOT;
         result += fs.readFileSync(path.resolve(SERVER_ROOT, `../${key}`), 'utf-8');
         result += '</script>';
+        return result;
+    };
+    const inlineCss = function (key) {
+        let result = '<style>';
+        result += fs.readFileSync(path.resolve(config.SERVER_ROOT, `../${key}`), 'utf-8');
+        result += '</style>';
         return result;
     };
     env.addGlobal('loadCss', loadCss);
@@ -46,6 +52,7 @@ module.exports = function (config) {
     env.addGlobal('loadJs', loadJs);
     env.addGlobal('loadScript', loadJs);
     env.addGlobal('inlineJs', inlineJs);
+    env.addGlobal('inlineCss', inlineCss);
 
     return async (ctx, next) => {
         const config = ctx.app.config;
