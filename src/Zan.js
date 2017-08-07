@@ -1,5 +1,6 @@
 import path from 'path';
 import Koa from 'koa';
+import debug from 'debug';
 import defaultsDeep from 'lodash/defaultsDeep';
 import uniq from 'lodash/uniq';
 import ip from 'ip';
@@ -17,7 +18,7 @@ class Zan {
 
     get defaultConfig() {
         return {
-            KEYS: ['youzan', 'www.youzan.com'],
+            KEYS: ['im a newer secret', 'i like turtle'],
             NODE_ENV: this.NODE_ENV,
             NODE_PORT: this.NODE_PORT,
             FAVICON_PATH: path.join(this.SERVER_ROOT, 'favicon.ico'),
@@ -50,16 +51,13 @@ class Zan {
             console.error('配置参数 SERVER_ROOT 不能为空');
             return;
         }
-        if (!this.config.STATIC_PATH) {
-            console.error('配置参数 STATIC_PATH 不能为空');
-            return;
-        }
         this.SERVER_ROOT = this.config.SERVER_ROOT;
         if (this.config.STATIC_PATH) {
             this.config.STATIC_PATH = path.join(this.SERVER_ROOT, this.config.STATIC_PATH);
         }
         this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
         this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
+        this.config.ZAN_VERSION = pkg.version;
         let VERSION_LIST = this.config.VERSION_LIST || [];
         delete this.config.VERSION_LIST;
         this.config = defaultsDeep({}, config, this.defaultConfig);
@@ -97,8 +95,10 @@ class Zan {
     }
 
     loadMiddlewares() {
+        const middlewareDebug = debug('zan:middleware');
         this.config.beforeLoadMiddlewares.call(this);
         for (let i = 0; i < this.middlewares.length; i++) {
+            middlewareDebug(this.middlewares[i].name);
             this.app.use(this.middlewares[i].fn);
         }
         this.config.afterLoadMiddlewares.call(this);

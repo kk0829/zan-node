@@ -3,15 +3,12 @@ import zanStatic from '../middlewares/static';
 import koaHelmet from 'koa-helmet';
 import code from '../middlewares/code';
 import zanConfig from '../middlewares/config';
-import state from '../middlewares/state';
-import zanReturn from '../middlewares/return';
 import seo from '../middlewares/seo';
-import render from '../middlewares/render';
 import log from '../middlewares/log';
 import body from '../middlewares/body';
 import xss from '../middlewares/xss';
 import mixin from '../middlewares/mixin';
-import loader from '../middlewares/loader';
+import nunjucks from '../middlewares/nunjucks';
 
 module.exports = function (config) {
     return [{
@@ -41,28 +38,13 @@ module.exports = function (config) {
             NODE_ENV: config.NODE_ENV
         })
     }, {
-        name: 'state',
-        fn: state
-    }, {
-        name: 'return',
-        fn: zanReturn
-    }, {
         name: 'seo',
         fn: seo({
             path: config.SEO_PATH
         })
     }, {
-        name: 'loader',
-        fn: loader({
-            NODE_ENV: config.NODE_ENV,
-            CDN_PATH: config.CDN_PATH
-        })
-    }, {
-        name: 'render',
-        fn: render({
-            viewPath: config.VIEW_PATH,
-            extraConfig: config.VIEW_EXTRA_DATA
-        })
+        name: 'nunjucks',
+        fn: nunjucks(config)
     }, {
         name: 'log',
         fn: log()
