@@ -1,4 +1,5 @@
 import defaultsDeep from 'lodash/defaultsDeep';
+import isPlainObject from 'lodash/isPlainObject';
 import querystring from 'querystring';
 import union from 'lodash/union';
 
@@ -19,7 +20,13 @@ module.exports = async(ctx, next) => {
         }
     };
     ctx.setGlobal = (key, value) => {
-        ctx.state.global[key] = value;
+        if (isPlainObject(key)) {
+            Object.keys(key).forEach((item) => {
+                ctx.state.global[item] = key[item];
+            });
+        } else {
+            ctx.state.global[key] = value;
+        }
     };
     ctx.getGlobal = (key) => {
         return key ? ctx.state.global[key] : ctx.state.global;
