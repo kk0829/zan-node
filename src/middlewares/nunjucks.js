@@ -1,3 +1,5 @@
+import fs from 'fs';
+import path from 'path';
 import nunjucks from 'nunjucks';
 import defaultsDeep from 'lodash/defaultsDeep';
 
@@ -32,10 +34,18 @@ module.exports = function (config) {
 
         return linkStr;
     };
+    const inlineJs = function(key) {
+        let result = '<script>';
+        const SERVER_ROOT = config.SERVER_ROOT;
+        result += fs.readFileSync(path.resolve(SERVER_ROOT, `../${key}`), 'utf-8');
+        result += '</script>';
+        return result;
+    };
     env.addGlobal('loadCss', loadCss);
     env.addGlobal('loadStyle', loadCss);
     env.addGlobal('loadJs', loadJs);
     env.addGlobal('loadScript', loadJs);
+    env.addGlobal('inlineJs', inlineJs);
 
     return async (ctx, next) => {
         const config = ctx.app.config;
