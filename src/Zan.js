@@ -37,6 +37,7 @@ class Zan {
                 path.join(this.SERVER_ROOT, 'config/version_js.json')
             ],
             ROUTERS_PATH: path.join(this.SERVER_ROOT, 'routes'),
+            CONTROLLERS_PATH: path.join(this.SERVER_ROOT, 'controllers'),
             XSS_WHITELISTS: [],
             ES7_ROUTER: false,
             CDN_PATH: '//www.cdn.com',

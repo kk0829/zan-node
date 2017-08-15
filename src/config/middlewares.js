@@ -9,6 +9,7 @@ import body from '../middlewares/body';
 import xss from '../middlewares/xss';
 import mixin from '../middlewares/mixin';
 import nunjucks from '../middlewares/nunjucks';
+import router from '../middlewares/router3';
 
 module.exports = function (config) {
     return [{
@@ -56,5 +57,8 @@ module.exports = function (config) {
         fn: xss({
             WHITELISTS: config.XSS_WHITELISTS
         })
+    }, {
+        name: 'router',
+        fn: router(config)
     }];
 };
