@@ -53,6 +53,7 @@ function getAllControllers(basePath, controllers = {}) {
  */
 module.exports = (config) => {
     let controllers = getAllControllers(config.CONTROLLERS_PATH);
+    routerDebug(controllers);
 
     return async (ctx, next) => {
         const requestPath = ctx.path;

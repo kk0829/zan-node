@@ -12,6 +12,8 @@ import pkg from '../package.json';
 import BusinessError from './base/BusinessError';
 import ParamsError from './base/ParamsError';
 import Validator from './base/Validator';
+import Controller from './base/Controller';
+import Service from './base/Service';
 import Router from 'koa-router';
 
 class Zan {
@@ -152,5 +154,7 @@ exports.ParamsError = ParamsError;
 exports.Validator = Validator;
 exports.validator = new Validator();
 exports.router = new Router();
+exports.Controller = Controller;
+exports.Service = Service;
 
 export default Zan;
