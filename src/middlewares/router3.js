@@ -4,6 +4,7 @@ import debug from 'debug';
 import camelCase from 'lodash/camelCase';
 import isPlainObject from 'lodash/isPlainObject';
 import isFunction from 'lodash/isFunction';
+import remove from 'lodash/remove';
 
 const routerDebug = debug('zan:router');
 
@@ -62,7 +63,10 @@ module.exports = (config) => {
             method: method
         };
         if (/.json$/.test(requestPath)) {
-            const pathArr = requestPath.slice(0, -5).split('/').slice(1);
+            let pathArr = requestPath.slice(0, -5).split('/').slice(1);
+            pathArr = remove(pathArr, (item) => {
+                return item !== '';
+            });
             if (pathArr.length === 1) {
                 requestDesc.file = 'index.js';
                 requestDesc.funcName = camelCase(`${method} ${pathArr[0]} json`);
@@ -71,7 +75,10 @@ module.exports = (config) => {
                 requestDesc.funcName = camelCase(`${method} ${pathArr.slice(-1)} json`);
             }
         } else {
-            const pathArr = requestPath.replace('.html', '').split('/').slice(1);
+            let pathArr = requestPath.replace('.html', '').split('/').slice(1);
+            pathArr = remove(pathArr, (item) => {
+                return item !== '';
+            });
             if (requestPath === '/' && method === 'GET') {
                 requestDesc.file = 'index.js';
                 requestDesc.funcName = 'getIndexHtml';
@@ -83,9 +90,9 @@ module.exports = (config) => {
                 requestDesc.funcName = camelCase(`${method} ${pathArr.slice(-1)} html`);
             }
         }
-
+        
+        routerDebug(requestDesc);
         if (controllers[requestDesc.file] && controllers[requestDesc.file].controller[requestDesc.funcName]) {
-            routerDebug(requestDesc);
             await controllers[requestDesc.file].controller[requestDesc.funcName](ctx, next);
         } else {
             await next();
