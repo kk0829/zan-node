@@ -78,7 +78,7 @@ module.exports = (config) => {
             } else if (pathArr.length === 1) {
                 requestDesc.file = 'index.js';
                 requestDesc.funcName = camelCase(`${method} ${pathArr[0]} html`);
-            } else if (pathArr.length > 2) {
+            } else if (pathArr.length >= 2) {
                 requestDesc.file = pathArr.slice(0, -1).join('/') + '.js';
                 requestDesc.funcName = camelCase(`${method} ${pathArr.slice(-1)} html`);
             }

@@ -6,8 +6,9 @@ import uniq from 'lodash/uniq';
 import ip from 'ip';
 import boxen from 'boxen';
 import middlewares from './config/middlewares';
-import router2 from './middlewares/router2';
 import router from './middlewares/router';
+import router2 from './middlewares/router2';
+import router3 from './middlewares/router3';
 import pkg from '../package.json';
 import BusinessError from './base/BusinessError';
 import ParamsError from './base/ParamsError';
@@ -110,6 +111,7 @@ class Zan {
             app: this.app,
             path: this.config.ROUTERS_PATH
         });
+        this.app.use(router3(this.config));
 
         let defaultErrorCallback = (err) => {
             console.log('<ERROR>');
