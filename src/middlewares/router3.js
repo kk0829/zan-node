@@ -86,7 +86,7 @@ module.exports = (config) => {
 
         if (controllers[requestDesc.file] && controllers[requestDesc.file].controller[requestDesc.funcName]) {
             routerDebug(requestDesc);
-            controllers[requestDesc.file].controller[requestDesc.funcName](ctx, next);
+            await controllers[requestDesc.file].controller[requestDesc.funcName](ctx, next);
         } else {
             await next();
         }
