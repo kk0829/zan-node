@@ -28,6 +28,9 @@ let generateEntries = (srcPath, name, entries) => {
 };
 
 module.exports = function (config) {
+    if (!fs.existsSync(config.path)) {
+        return;
+    }
     let entries = generateEntries(config.path);
 
     for (let i = 0; i < entries.length; i++) {
