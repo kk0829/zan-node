@@ -16,6 +16,7 @@ import Validator from './base/Validator';
 import Controller from './base/Controller';
 import Service from './base/Service';
 import Router from 'koa-router';
+import { viewEnv } from './middlewares/nunjucks';
 
 class Zan {
 
@@ -158,5 +159,6 @@ exports.validator = new Validator();
 exports.router = new Router();
 exports.Controller = Controller;
 exports.Service = Service;
+exports.viewEnv = viewEnv;
 
 export default Zan;
