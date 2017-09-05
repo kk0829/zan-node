@@ -3,10 +3,16 @@ import path from 'path';
 import nunjucks from 'nunjucks';
 import defaultsDeep from 'lodash/defaultsDeep';
 
-module.exports = function (config) {
-    let env = nunjucks.configure(config.VIEW_PATH, {
-        autoescape: true
-    });
+const VIEW_PATH = path.join(process.cwd(), 'server/views');
+
+let env = nunjucks.configure(VIEW_PATH, {
+    autoescape: true
+});
+
+exports.viewEnv = env;
+
+export default function (config) {
+    
     const loadJs = function (key, vendor = false, crossorigin = false, ifAsync = false) {
         const keys = key.split('.');
         const realKey = vendor ? key : keys.length > 1 ? keys[1] : keys[0];
