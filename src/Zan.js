@@ -46,7 +46,8 @@ class Zan {
             ES7_ROUTER: false,
             CDN_PATH: '//www.cdn.com',
             beforeLoadMiddlewares() {},
-            afterLoadMiddlewares() {}
+            afterLoadMiddlewares() {},
+            MIDDLEWARES_PATH: path.join(this.SERVER_ROOT, 'middlewares')
         };
     }
 
@@ -99,9 +100,27 @@ class Zan {
         this.config.VERSION_LIST = VERSION_LIST;
     }
 
+    // 自动加载业务中间件
+    // >= 0.0.17 自动加载
+    // 低版本 手动在 server/app.js 下配置
+    autoLoadMiddlewares() {
+        const middlewares = require(this.config.MIDDLEWARES_PATH);
+        if (Array.isArray(middlewares)) {
+            for (let i = 0; i < middlewares.length; i++) {
+                this.middlewares.push({
+                    name: middlewares[i].name || 'anonymous',
+                    fn: middlewares[i]
+                });
+            }
+        } else {
+            this.config.beforeLoadMiddlewares.call(this);
+        }
+    }
+
     loadMiddlewares() {
         const middlewareDebug = debug('zan:middleware');
-        this.config.beforeLoadMiddlewares.call(this);
+        this.autoLoadMiddlewares();
+        
         for (let i = 0; i < this.middlewares.length; i++) {
             middlewareDebug(this.middlewares[i].name);
             this.app.use(this.middlewares[i].fn);
