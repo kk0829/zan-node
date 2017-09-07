@@ -142,20 +142,21 @@ class Zan {
 
         this.app.listen(this.NODE_PORT, () => {
             if (this.NODE_ENV === 'development') {
-                let msg = `
-    Serving!
+                let msg = `服务启动成功!
 
-        - Zan框架版本：         ${pkg.version}
-        - NODE_ENV:             ${this.NODE_ENV}
-        - NODE_PORT:            ${this.NODE_PORT}
-        - Local:                http://127.0.0.1:${this.NODE_PORT}
-        - On Your Network:      http://${ip.address()}:${this.NODE_PORT}
-
-            Copied local address to clipboard!`;
+- Zan框架版本：         ${pkg.version}
+- NODE_ENV:             ${this.NODE_ENV}
+- NODE_PORT:            ${this.NODE_PORT}
+- Local:                http://127.0.0.1:${this.NODE_PORT}
+- On Your Network:      http://${ip.address()}:${this.NODE_PORT}`;
+                if (process.env.HTTP_PROXY && process.env.HTTPS_PROXY) {
+                    msg += `\n- HTTP_PROXY            ${process.env.HTTP_PROXY}`;
+                    msg += `\n- HTTPS_PROXY           ${process.env.HTTPS_PROXY}`;
+                }
                 console.log(boxen(msg, {
                     padding: {
-                        left: 0,
-                        right: 4,
+                        left: 2,
+                        right: 2,
                         top: 0,
                         bottom: 1
                     },
