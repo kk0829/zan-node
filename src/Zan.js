@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import Koa from 'koa';
 import debug from 'debug';
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -64,10 +65,7 @@ class Zan {
         this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
         this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
         this.config.ZAN_VERSION = pkg.version;
-        let VERSION_LIST = this.config.VERSION_LIST || [];
-        delete this.config.VERSION_LIST;
         this.config = defaultsDeep({}, config, this.defaultConfig);
-        this.config.VERSION_LIST = this.config.VERSION_LIST.concat(VERSION_LIST);
         this.middlewares = middlewares(this.config);
 
         this.app = new Koa();
@@ -81,21 +79,23 @@ class Zan {
         return this;
     }
 
+    // 自动加载静态资源 Version 文件
     loadVersionMap() {
-        let VERSION_LIST = this.config.VERSION_LIST;
+        let versionFiles = fs.readdirSync(this.config.CONFIG_PATH)
+            .filter((item) => {
+                return /^version.*\.json$/.test(item);
+            });
+        let VERSION_LIST = [];
         let VERSION_MAP = {};
-
-        for (let i = 0; i < VERSION_LIST.length; i++) {
-            if (!path.isAbsolute(VERSION_LIST[i])) {
-                VERSION_LIST[i] = path.resolve(this.SERVER_ROOT, VERSION_LIST[i]);
-            }
+        for (let i = 0; i < versionFiles.length; i++) {
+            VERSION_LIST[i] = path.join(this.config.CONFIG_PATH, versionFiles[i]);
         }
-        VERSION_LIST = uniq(VERSION_LIST);
 
         for (let i = 0; i < VERSION_LIST.length; i++) {
             let parsed = path.parse(VERSION_LIST[i]);
             VERSION_MAP[parsed.name] = require(VERSION_LIST[i]);
         }
+
         this.config.VERSION_MAP = VERSION_MAP;
         this.config.VERSION_LIST = VERSION_LIST;
     }
