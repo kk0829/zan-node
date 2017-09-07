@@ -2,12 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import defaultsDeep from 'lodash/defaultsDeep';
+import AutoEscapeExtension from './nunjucks_extensions/autoescape';
 
 const VIEW_PATH = path.join(process.cwd(), 'server/views');
 
 let env = nunjucks.configure(VIEW_PATH, {
     autoescape: true
 });
+
+env.addExtension('AutoEscapeExtension', new AutoEscapeExtension(env));
 
 exports.viewEnv = env;
 
