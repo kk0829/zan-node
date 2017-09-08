@@ -1,4 +1,5 @@
 import path from 'path';
+import fs from 'fs';
 import Koa from 'koa';
 import debug from 'debug';
 import defaultsDeep from 'lodash/defaultsDeep';
@@ -64,10 +65,7 @@ class Zan {
         this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
         this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
         this.config.ZAN_VERSION = pkg.version;
-        let VERSION_LIST = this.config.VERSION_LIST || [];
-        delete this.config.VERSION_LIST;
         this.config = defaultsDeep({}, config, this.defaultConfig);
-        this.config.VERSION_LIST = this.config.VERSION_LIST.concat(VERSION_LIST);
         this.middlewares = middlewares(this.config);
 
         this.app = new Koa();
@@ -81,21 +79,23 @@ class Zan {
         return this;
     }
 
+    // 自动加载静态资源 Version 文件
     loadVersionMap() {
-        let VERSION_LIST = this.config.VERSION_LIST;
+        let versionFiles = fs.readdirSync(this.config.CONFIG_PATH)
+            .filter((item) => {
+                return /^version.*\.json$/.test(item);
+            });
+        let VERSION_LIST = [];
         let VERSION_MAP = {};
-
-        for (let i = 0; i < VERSION_LIST.length; i++) {
-            if (!path.isAbsolute(VERSION_LIST[i])) {
-                VERSION_LIST[i] = path.resolve(this.SERVER_ROOT, VERSION_LIST[i]);
-            }
+        for (let i = 0; i < versionFiles.length; i++) {
+            VERSION_LIST[i] = path.join(this.config.CONFIG_PATH, versionFiles[i]);
         }
-        VERSION_LIST = uniq(VERSION_LIST);
 
         for (let i = 0; i < VERSION_LIST.length; i++) {
             let parsed = path.parse(VERSION_LIST[i]);
             VERSION_MAP[parsed.name] = require(VERSION_LIST[i]);
         }
+
         this.config.VERSION_MAP = VERSION_MAP;
         this.config.VERSION_LIST = VERSION_LIST;
     }
@@ -142,20 +142,21 @@ class Zan {
 
         this.app.listen(this.NODE_PORT, () => {
             if (this.NODE_ENV === 'development') {
-                let msg = `
-    Serving!
+                let msg = `服务启动成功!
 
-        - Zan框架版本：         ${pkg.version}
-        - NODE_ENV:             ${this.NODE_ENV}
-        - NODE_PORT:            ${this.NODE_PORT}
-        - Local:                http://127.0.0.1:${this.NODE_PORT}
-        - On Your Network:      http://${ip.address()}:${this.NODE_PORT}
-
-            Copied local address to clipboard!`;
+- Zan框架版本：         ${pkg.version}
+- NODE_ENV:             ${this.NODE_ENV}
+- NODE_PORT:            ${this.NODE_PORT}
+- Local:                http://127.0.0.1:${this.NODE_PORT}
+- On Your Network:      http://${ip.address()}:${this.NODE_PORT}`;
+                if (process.env.HTTP_PROXY && process.env.HTTPS_PROXY) {
+                    msg += `\n- HTTP_PROXY            ${process.env.HTTP_PROXY}`;
+                    msg += `\n- HTTPS_PROXY           ${process.env.HTTPS_PROXY}`;
+                }
                 console.log(boxen(msg, {
                     padding: {
-                        left: 0,
-                        right: 4,
+                        left: 2,
+                        right: 2,
                         top: 0,
                         bottom: 1
                     },

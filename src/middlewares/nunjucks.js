@@ -2,12 +2,15 @@ import fs from 'fs';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import defaultsDeep from 'lodash/defaultsDeep';
+import AutoEscapeExtension from './nunjucks_extensions/autoescape';
 
 const VIEW_PATH = path.join(process.cwd(), 'server/views');
 
 let env = nunjucks.configure(VIEW_PATH, {
     autoescape: true
 });
+
+env.addExtension('AutoEscapeExtension', new AutoEscapeExtension(env));
 
 exports.viewEnv = env;
 
@@ -21,7 +24,7 @@ export default function (config) {
         const src = (config.NODE_ENV === 'development' && !vendor)
             ? `/${realKey}.js`
             : (vendor ? `${config.CDN_PATH}/${realKey}` : `${config.CDN_PATH}/${realVersionJs[realKey]}`);
-        let scriptStr = `<script src="${src}" charset="utf-8"`;
+        let scriptStr = `<script onerror="_cdnFallback(this)" src="${src}" charset="utf-8"`;
         scriptStr += ifAsync ? ' async ' : '';
         scriptStr += crossorigin ? ' crossorigin="anonymous" ' : '';
         scriptStr += '></script>';
