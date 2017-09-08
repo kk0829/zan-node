@@ -24,7 +24,7 @@ export default function (config) {
         const src = (config.NODE_ENV === 'development' && !vendor)
             ? `/${realKey}.js`
             : (vendor ? `${config.CDN_PATH}/${realKey}` : `${config.CDN_PATH}/${realVersionJs[realKey]}`);
-        let scriptStr = `<script src="${src}" charset="utf-8"`;
+        let scriptStr = `<script onerror="_cdnFallback(this)" src="${src}" charset="utf-8"`;
         scriptStr += ifAsync ? ' async ' : '';
         scriptStr += crossorigin ? ' crossorigin="anonymous" ' : '';
         scriptStr += '></script>';
