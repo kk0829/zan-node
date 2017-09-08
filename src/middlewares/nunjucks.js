@@ -4,7 +4,13 @@ import nunjucks from 'nunjucks';
 import defaultsDeep from 'lodash/defaultsDeep';
 import AutoEscapeExtension from './nunjucks_extensions/autoescape';
 
-const VIEW_PATH = path.join(process.cwd(), 'server/views');
+let VIEW_PATH;
+
+if (process.env.NODE_ENV === 'development') {
+    VIEW_PATH = path.join(process.cwd(), 'server/views');
+} else {
+    VIEW_PATH = path.join(process.cwd(), 'server_dist/views');
+}
 
 let env = nunjucks.configure(VIEW_PATH, {
     autoescape: true
