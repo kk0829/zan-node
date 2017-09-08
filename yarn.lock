@@ -1304,7 +1304,7 @@ debug-log@^1.0.1:
   version "1.0.1"
   resolved "http://registry.npm.qima-inc.com/debug-log/download/debug-log-1.0.1.tgz#2307632d4c04382b8df8a32f70b895046d52745f"
 
-debug@*, debug@^2.1.1, debug@^2.2.0, debug@^2.6.0, debug@^2.6.3, debug@^2.6.8, debug@^2.x:
+debug@*, debug@2.6.8, debug@^2.1.1, debug@^2.2.0, debug@^2.6.0, debug@^2.6.3, debug@^2.x:
   version "2.6.8"
   resolved "http://registry.npm.qima-inc.com/debug/download/debug-2.6.8.tgz#e731531ca2ede27d188222427da17821d68ff4fc"
   dependencies:
@@ -3710,6 +3710,10 @@ ua-parser-js@0.7.12:
   version "0.7.12"
   resolved "http://registry.npm.qima-inc.com/ua-parser-js/download/ua-parser-js-0.7.12.tgz#04c81a99bdd5dc52263ea29d24c6bf8d4818a4bb"
 
+ua-parser-js@0.7.14:
+  version "0.7.14"
+  resolved "http://registry.npm.qima-inc.com/ua-parser-js/download/ua-parser-js-0.7.14.tgz#110d53fa4c3f326c121292bbeac904d2e03387ca"
+
 uglify-js@2.6.0, uglify-js@^2.6:
   version "2.6.0"
   resolved "http://registry.npm.qima-inc.com/uglify-js/download/uglify-js-2.6.0.tgz#25eaa1cc3550e39410ceefafd1cfbb6b6d15f001"
@@ -3979,3 +3983,9 @@ yargs@~3.10.0:
     cliui "^2.1.0"
     decamelize "^1.0.0"
     window-size "0.1.0"
+
+zan-ua@0.0.2:
+  version "0.0.2"
+  resolved "http://registry.npm.qima-inc.com/zan-ua/download/zan-ua-0.0.2.tgz#6cd09c3d349d23d35d6ae50a879235acc86209ed"
+  dependencies:
+    ua-parser-js "0.7.14"

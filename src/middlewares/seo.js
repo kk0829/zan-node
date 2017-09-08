@@ -1,4 +1,4 @@
-import UA from './ua';
+import UA from 'zan-ua';
 
 module.exports = function (options) {
     let SEO_CONSTANTS = require(options.path);
