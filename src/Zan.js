@@ -43,10 +43,7 @@ class Zan {
 
     constructor(config) {
         this.config = config || {};
-        if (!this.config.SERVER_ROOT) {
-            console.error('配置参数 SERVER_ROOT 不能为空');
-            return;
-        }
+        this.config.SERVER_ROOT = this.config.SERVER_ROOT || path.join(process.cwd(), 'server');
         this.SERVER_ROOT = this.config.SERVER_ROOT;
         if (this.config.STATIC_PATH) {
             this.config.STATIC_PATH = path.join(this.SERVER_ROOT, this.config.STATIC_PATH);
