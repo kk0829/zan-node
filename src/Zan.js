@@ -16,7 +16,7 @@ import Validator from './base/Validator';
 import Controller from './base/Controller';
 import Service from './base/Service';
 import Router from 'koa-router';
-import { viewEnv } from './middlewares/nunjucks';
+import viewEnv from './middlewares/nunjucks/env';
 
 class Zan {
 
