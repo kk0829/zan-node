@@ -9,7 +9,6 @@ import boxen from 'boxen';
 import middlewares from './config/middlewares';
 import router from './middlewares/router';
 import router2 from './middlewares/router2';
-import router3 from './middlewares/router3';
 import pkg from '../package.json';
 import BusinessError from './base/BusinessError';
 import ParamsError from './base/ParamsError';
@@ -35,7 +34,6 @@ class Zan {
             ROUTERS_PATH: path.join(this.SERVER_ROOT, 'routes'),
             CONTROLLERS_PATH: path.join(this.SERVER_ROOT, 'controllers'),
             XSS_WHITELISTS: [],
-            ES7_ROUTER: false,
             CDN_PATH: '//www.cdn.com',
             beforeLoadMiddlewares() {},
             afterLoadMiddlewares() {},
@@ -118,11 +116,11 @@ class Zan {
         }
         this.config.afterLoadMiddlewares.call(this);
 
-        (this.config.ES7_ROUTER ? router2 : router)({
+        router({
             app: this.app,
             path: this.config.ROUTERS_PATH
         });
-        this.app.use(router3(this.config));
+        this.app.use(router2(this.config));
 
         let defaultErrorCallback = (err) => {
             console.log('<ERROR>');

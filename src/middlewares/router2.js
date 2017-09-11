@@ -1,102 +1,101 @@
 import fs from 'fs';
 import path from 'path';
-import convert from 'koa-convert';
-import Router from 'koa-router';
+import debug from 'debug';
+import camelCase from 'lodash/camelCase';
+import isPlainObject from 'lodash/isPlainObject';
+import isFunction from 'lodash/isFunction';
+import remove from 'lodash/remove';
 
-export default function({ app, path: routePath }) {
-    const cwd           = process.cwd();
-    const ENV           = process.env.NODE_ENV;
-    const prodPath      = ENV === 'production' ? 'server_dist' : 'server';
-    const router        = new Router();
-    const noop          = () => {};
-    const routerConfig  = {};
-    const controllers   = {};
+const routerDebug = debug('zan:router');
 
-    const controllerDirPath = path.join(cwd, prodPath, '/controllers');
-    const routerPath = path.join(routePath);
-    const routerConfigPath  = path.join(cwd, prodPath, '/routes/router.config');
-
-    // get all controller class
-    fs.readdirSync(controllerDirPath).forEach((file) => {
-        if (/\.js$/.test(file)) {
-            const name = file.replace('.js', '');
-            controllers[name] = require(path.join(controllerDirPath, file)).default;
-        }
-    });
-
-    // get all json file route config
-    let defaultRouter = {}
-    fs.readdirSync(routerPath).forEach((file) => {
-        if (/\.json$/.test(file)) {
-            defaultRouter = Object.assign(
-                defaultRouter,
-                JSON.parse(fs.readFileSync(path.join(routerPath, file)) || '{}')
-            );
-        }
-    });
-
-    /*
-     * key is Controller name, value is a array with object
-     * {
-     *   method: 'get|post|all|delete|patch|put',
-     *   url
-     * }
-     */
-
-    const addRouterConfig = (item) => {
-        const { method } = item;
-        if (!routerConfig[method]) {
-            routerConfig[method] = [];
-        }
-        routerConfig[method].push(item);
-    };
-
-    const formatRouter = item => `[${item.method.toUpperCase()}] ${item.url} => ${item.ctrlName}.${item.fnName}`;
-
-    // deal with defaultRouter
-    const defaultRouterConfig = {};
-    Object.keys(defaultRouter).forEach((key) => {
-        const [method, url] = key.split(' ');
-        const [ctrlName, fnName] = defaultRouter[key].split('.');
-        if (!defaultRouterConfig[ctrlName]) defaultRouterConfig[ctrlName] = [];
-        defaultRouterConfig[ctrlName].push({
-            method,
-            url,
-            fnName,
-        });
-    });
-
-    Object.keys(controllers).forEach((ctrlName) => {
-        const controller = new controllers[ctrlName]();
-        const $routes = controller.$routes;
-
-        // load default route config first
-        (defaultRouterConfig[ctrlName] || []).forEach((item) => {
-            addRouterConfig(Object.assign(item, { ctrlName }));
-            router[item.method](item.url, controller[item.fnName]);
+function getAllControllers(basePath, controllers = {}) {
+    const items = fs.readdirSync(basePath)
+        .filter((item) => {
+            return item.indexOf('.') !== 0
         });
 
-        ($routes || []).forEach((item) => {
-            addRouterConfig(Object.assign(item, { ctrlName }));
-            router[item.method](item.url, ...item.middleware, controller[item.fnName]);
-        });
-    });
+    for (let i = 0; i < items.length; i++) {
+        let absolutePath = path.join(basePath, items[i]);
+        let stat = fs.statSync(absolutePath);
+        if (stat.isDirectory()) {
+            getAllControllers(absolutePath, controllers);
+        } else if (stat.isFile() && items[i].indexOf('.js') === items[i].length - 3) {
+            let requireContent = require(absolutePath);
+            let key = absolutePath.split('controllers/')[1];
 
-    // write config into file
-    const PRE_COMMENT = '# This file is auto generated when server is started.\n';
-    const result = Object
-        .keys(routerConfig)
-        .sort((a, b) => a.length - b.length)
-        .map(key => routerConfig[key]
-            .map(item => formatRouter(item))
-            .sort((a, b) => a.length - b.length))
-        .reduce((prev, next) => prev.concat(next), []);
+            if (isFunction(requireContent)) {
+                controllers[key] = {
+                    controller: new requireContent()
+                };
+            } else if (isPlainObject(requireContent) && requireContent.default) {
+                if (isFunction(requireContent.default)) {
+                    controllers[key] = {
+                        controller: new requireContent.default()
+                    };
+                } else {
+                    controllers[key] = {
+                        controller: requireContent.default
+                    };
+                }
+            } else {
+                controllers[key] = {
+                    controller: requireContent
+                };
+            }
+        }
+    }
 
-    result.unshift(PRE_COMMENT);
-
-    fs.writeFile(routerConfigPath, result.join('\n'), noop);
-
-    app.use(convert(router.routes()));
-    app.use(convert(router.allowedMethods()));
+    return controllers;
 };
 
+/**
+ * .json 结尾的表示接口请求
+ * .html 或无后缀的表示页面请求
+ */
+module.exports = (config) => {
+    let controllers = getAllControllers(config.CONTROLLERS_PATH);
+    routerDebug(controllers);
+
+    return async (ctx, next) => {
+        const requestPath = ctx.path;
+        const method = ctx.method;
+        let requestDesc = {
+            method: method
+        };
+        if (/.json$/.test(requestPath)) {
+            let pathArr = requestPath.slice(0, -5).split('/').slice(1);
+            pathArr = remove(pathArr, (item) => {
+                return item !== '';
+            });
+            if (pathArr.length === 1) {
+                requestDesc.file = 'index.js';
+                requestDesc.funcName = camelCase(`${method} ${pathArr[0]} json`);
+            } else if (pathArr.length >= 2) {
+                requestDesc.file = pathArr.slice(0, -1).join('/') + '.js';
+                requestDesc.funcName = camelCase(`${method} ${pathArr.slice(-1)} json`);
+            }
+        } else {
+            let pathArr = requestPath.replace('.html', '').split('/').slice(1);
+            pathArr = remove(pathArr, (item) => {
+                return item !== '';
+            });
+            if (requestPath === '/' && method === 'GET') {
+                requestDesc.file = 'index.js';
+                requestDesc.funcName = 'getIndexHtml';
+            } else if (pathArr.length === 1) {
+                requestDesc.file = 'index.js';
+                requestDesc.funcName = camelCase(`${method} ${pathArr[0]} html`);
+            } else if (pathArr.length >= 2) {
+                requestDesc.file = pathArr.slice(0, -1).join('/') + '.js';
+                requestDesc.funcName = camelCase(`${method} ${pathArr.slice(-1)} html`);
+            }
+        }
+        
+        routerDebug(requestDesc);
+        if (controllers[requestDesc.file] && controllers[requestDesc.file].controller[requestDesc.funcName]) {
+            await controllers[requestDesc.file].controller[requestDesc.funcName](ctx, next);
+        } else {
+            await next();
+        }
+    };
+};
