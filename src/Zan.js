@@ -60,7 +60,7 @@ class Zan {
         this.app.env = this.NODE_ENV;
 
         this.loadVersionMap();
-        this.loadMiddlewares();
+        this.run();
 
         return this;
     }
@@ -90,6 +90,7 @@ class Zan {
     // >= 0.0.17 自动加载
     // 低版本 手动在 server/app.js 下配置
     autoLoadMiddlewares() {
+        const middlewareDebug = debug('zan:middleware');
         const middlewares = require(this.config.MIDDLEWARES_PATH);
         if (Array.isArray(middlewares)) {
             for (let i = 0; i < middlewares.length; i++) {
@@ -101,17 +102,16 @@ class Zan {
         } else {
             this.config.beforeLoadMiddlewares.call(this);
         }
-    }
 
-    loadMiddlewares() {
-        const middlewareDebug = debug('zan:middleware');
-        this.autoLoadMiddlewares();
-        
         for (let i = 0; i < this.middlewares.length; i++) {
             middlewareDebug(this.middlewares[i].name);
             this.app.use(this.middlewares[i].fn);
         }
         this.config.afterLoadMiddlewares.call(this);
+    }
+
+    run() {
+        this.autoLoadMiddlewares();
 
         router({
             app: this.app,
