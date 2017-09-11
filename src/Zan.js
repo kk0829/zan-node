@@ -32,15 +32,6 @@ class Zan {
             CONFIG_PATH: path.join(this.SERVER_ROOT, 'config'),
             SEO_PATH: path.join(this.SERVER_ROOT, 'constants/site.js'),
             VIEW_PATH: path.join(this.SERVER_ROOT, 'views'),
-            VIEW_EXTRA_DATA: {
-                env: this.NODE_ENV,
-                version_css: require(path.join(this.SERVER_ROOT, 'config/version_css.json')),
-                version_js: require(path.join(this.SERVER_ROOT, 'config/version_js.json'))
-            },
-            VERSION_LIST: [
-                path.join(this.SERVER_ROOT, 'config/version_css.json'),
-                path.join(this.SERVER_ROOT, 'config/version_js.json')
-            ],
             ROUTERS_PATH: path.join(this.SERVER_ROOT, 'routes'),
             CONTROLLERS_PATH: path.join(this.SERVER_ROOT, 'controllers'),
             XSS_WHITELISTS: [],
