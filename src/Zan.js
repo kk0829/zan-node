@@ -9,7 +9,6 @@ import boxen from 'boxen';
 import middlewares from './config/middlewares';
 import router from './middlewares/router';
 import router2 from './middlewares/router2';
-import router3 from './middlewares/router3';
 import pkg from '../package.json';
 import BusinessError from './base/BusinessError';
 import ParamsError from './base/ParamsError';
@@ -17,7 +16,7 @@ import Validator from './base/Validator';
 import Controller from './base/Controller';
 import Service from './base/Service';
 import Router from 'koa-router';
-import { viewEnv } from './middlewares/nunjucks';
+import viewEnv from './middlewares/nunjucks/env';
 
 class Zan {
 
@@ -35,7 +34,6 @@ class Zan {
             ROUTERS_PATH: path.join(this.SERVER_ROOT, 'routes'),
             CONTROLLERS_PATH: path.join(this.SERVER_ROOT, 'controllers'),
             XSS_WHITELISTS: [],
-            ES7_ROUTER: false,
             CDN_PATH: '//www.cdn.com',
             beforeLoadMiddlewares() {},
             afterLoadMiddlewares() {},
@@ -45,10 +43,7 @@ class Zan {
 
     constructor(config) {
         this.config = config || {};
-        if (!this.config.SERVER_ROOT) {
-            console.error('配置参数 SERVER_ROOT 不能为空');
-            return;
-        }
+        this.config.SERVER_ROOT = this.config.SERVER_ROOT || path.join(process.cwd(), 'server');
         this.SERVER_ROOT = this.config.SERVER_ROOT;
         if (this.config.STATIC_PATH) {
             this.config.STATIC_PATH = path.join(this.SERVER_ROOT, this.config.STATIC_PATH);
@@ -65,7 +60,7 @@ class Zan {
         this.app.env = this.NODE_ENV;
 
         this.loadVersionMap();
-        this.loadMiddlewares();
+        this.run();
 
         return this;
     }
@@ -95,6 +90,7 @@ class Zan {
     // >= 0.0.17 自动加载
     // 低版本 手动在 server/app.js 下配置
     autoLoadMiddlewares() {
+        const middlewareDebug = debug('zan:middleware');
         const middlewares = require(this.config.MIDDLEWARES_PATH);
         if (Array.isArray(middlewares)) {
             for (let i = 0; i < middlewares.length; i++) {
@@ -106,23 +102,22 @@ class Zan {
         } else {
             this.config.beforeLoadMiddlewares.call(this);
         }
-    }
 
-    loadMiddlewares() {
-        const middlewareDebug = debug('zan:middleware');
-        this.autoLoadMiddlewares();
-        
         for (let i = 0; i < this.middlewares.length; i++) {
             middlewareDebug(this.middlewares[i].name);
             this.app.use(this.middlewares[i].fn);
         }
         this.config.afterLoadMiddlewares.call(this);
+    }
 
-        (this.config.ES7_ROUTER ? router2 : router)({
+    run() {
+        this.autoLoadMiddlewares();
+
+        router({
             app: this.app,
             path: this.config.ROUTERS_PATH
         });
-        this.app.use(router3(this.config));
+        this.app.use(router2(this.config));
 
         let defaultErrorCallback = (err) => {
             console.log('<ERROR>');

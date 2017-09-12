@@ -1,24 +1,11 @@
 import fs from 'fs';
 import path from 'path';
-import nunjucks from 'nunjucks';
 import defaultsDeep from 'lodash/defaultsDeep';
-import AutoEscapeExtension from './nunjucks_extensions/autoescape';
+import env from './nunjucks/env';
+import AutoEscapeExtension from './nunjucks/extensions/autoescape';
 
-let VIEW_PATH;
-
-if (process.env.NODE_ENV === 'development') {
-    VIEW_PATH = path.join(process.cwd(), 'server/views');
-} else {
-    VIEW_PATH = path.join(process.cwd(), 'server_dist/views');
-}
-
-let env = nunjucks.configure(VIEW_PATH, {
-    autoescape: true
-});
-
+// 添加扩展
 env.addExtension('AutoEscapeExtension', new AutoEscapeExtension(env));
-
-exports.viewEnv = env;
 
 export default function (config) {
     
