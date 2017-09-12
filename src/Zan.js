@@ -113,10 +113,10 @@ class Zan {
     run() {
         this.autoLoadMiddlewares();
 
-        router({
-            app: this.app,
-            path: this.config.ROUTERS_PATH
-        });
+        // router({
+        //     app: this.app,
+        //     path: this.config.ROUTERS_PATH
+        // });
         this.app.use(router2(this.config));
 
         let defaultErrorCallback = (err) => {
