@@ -70,6 +70,23 @@ export default function (config) {
 
             ctx.body = env.render(name, wrapContext);
         };
+
+        // 针对 iron 定制
+        ctx.display = function(name, context = {}) {
+            const state = ctx.getState();
+            const globalState = defaultsDeep({
+                env: config.NODE_ENV,
+                version: config.ZAN_VERSION
+            }, context._global, ctx.getGlobal());
+            const wrapContext = defaultsDeep({}, context, state);
+            delete wrapContext.global;
+            wrapContext._global = JSON.stringify(globalState);
+            let arr = name.split('/');
+            arr.splice(1, 0, 'views');
+            name = arr.join('/');
+
+            ctx.body = env.render(name, wrapContext);
+        };
         await next();
     };
 };
