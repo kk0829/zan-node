@@ -50,7 +50,7 @@ class Zan {
         this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
         this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
         let defaultServerRoot;
-        if (this.SERVER_ROOT === 'development') {
+        if (this.NODE_ENV === 'development') {
             defaultServerRoot = path.join(process.cwd(), 'server');
         } else {
             defaultServerRoot = path.join(process.cwd(), 'server_dist');
