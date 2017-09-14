@@ -47,13 +47,19 @@ class Zan {
 
     constructor(config) {
         this.config = config || {};
-        this.config.SERVER_ROOT = this.config.SERVER_ROOT || path.join(process.cwd(), 'server');
+        this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
+        this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
+        let defaultServerRoot;
+        if (this.SERVER_ROOT === 'development') {
+            defaultServerRoot = path.join(process.cwd(), 'server');
+        } else {
+            defaultServerRoot = path.join(process.cwd(), 'server_dist');
+        }
+        this.config.SERVER_ROOT = this.config.SERVER_ROOT || defaultServerRoot;
         this.SERVER_ROOT = this.config.SERVER_ROOT;
         if (this.config.STATIC_PATH) {
             this.config.STATIC_PATH = path.join(this.SERVER_ROOT, this.config.STATIC_PATH);
         }
-        this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
-        this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
         this.config.ZAN_VERSION = pkg.version;
         this.config = defaultsDeep({}, config, this.defaultConfig);
         this.middlewares = middlewares(this.config);
