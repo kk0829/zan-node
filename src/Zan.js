@@ -18,6 +18,7 @@ import Controller from './base/Controller';
 import Service from './base/Service';
 import Router from 'koa-router';
 import viewEnv from './middlewares/nunjucks/env';
+import rewrite from './middlewares/rewrite';
 
 class Zan {
 
@@ -180,5 +181,6 @@ exports.router = new Router();
 exports.Controller = Controller;
 exports.Service = Service;
 exports.viewEnv = viewEnv;
+exports.rewrite = rewrite;
 
 export default Zan;

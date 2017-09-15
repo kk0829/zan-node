@@ -1,6 +1,6 @@
 {
   "name": "zan-node",
-  "version": "0.0.26",
+  "version": "0.0.27",
   "description": "Zan Node Framework",
   "main": "./lib/Zan.js",
   "author": "kk",
@@ -41,6 +41,7 @@
     "koa-swig": "2.2.1",
     "lodash": "4.17.4",
     "nunjucks": "3.0.1",
+    "path-to-regexp": "2.0.0",
     "ua-parser-js": "0.7.12",
     "validator": "8.0.0",
     "xss": "0.3.3",
