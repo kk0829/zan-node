@@ -19,7 +19,7 @@ module.exports = async(ctx, next) => {
             });
         }
     };
-    ctx.setData = (key, value) => {
+    ctx.setEnv = (key, value) => {
         if (isPlainObject(key)) {
             Object.keys(key).forEach((item) => {
                 ctx.state.global[item] = key[item];
