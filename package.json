@@ -1,6 +1,6 @@
 {
   "name": "zan-node",
-  "version": "0.0.29",
+  "version": "0.0.30",
   "description": "Zan Node Framework",
   "main": "./lib/Zan.js",
   "author": "kk",
@@ -31,6 +31,7 @@
     "boxen": "1.0.0",
     "co": "4.6.0",
     "debug": "2.6.8",
+    "glob": "7.1.2",
     "ip": "1.1.5",
     "koa": "2.2.0",
     "koa-body": "1.6.0",
