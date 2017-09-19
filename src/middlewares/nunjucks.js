@@ -67,6 +67,7 @@ export default function (config) {
             const wrapContext = defaultsDeep({}, context, state);
             delete wrapContext.global;
             wrapContext._global = JSON.stringify(globalState);
+            wrapContext.env = config.NODE_ENV;
 
             ctx.body = env.render(name, wrapContext);
         };
