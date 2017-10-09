@@ -1,5 +1,5 @@
 import path from 'path';
-import koaBody from 'koa-body';
+import koaBody from 'zan-koa-body';
 
 /**
  * strict {Boolean} If enabled, don't parse GET, HEAD, DELETE requests, default true
