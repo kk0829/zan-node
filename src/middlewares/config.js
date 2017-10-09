@@ -1,17 +1,25 @@
-import lodash from 'lodash';
+import defaultsDeep from 'lodash/defaultsDeep';
+import fs from 'fs';
 
-/**
- * @param {String} config.path 配置文件目录
- * @param {String} config.NODE_ENV 环境变量
- */
-module.exports = function (config) {
-    config = config || {};
-    config.NODE_ENV = config.NODE_ENV || 'development';
-    const commonConfig = require(`${config.path}/common.js`);
-    const envConfig = require(`${config.path}/config.${config.NODE_ENV}.js`);
-    const obj = lodash.defaultsDeep({}, envConfig, commonConfig);
-    return async (ctx, next) => {
-        ctx.getConfig = function (name) {
+module.exports = function(config = {}) {
+    const CONFIG_PATH = config.CONFIG_PATH;
+    const NODE_ENV = config.NODE_ENV;
+    let defaultConfig = {};
+    let envConfig = {};
+
+    if (fs.existsSync(`${CONFIG_PATH}/common.js`)) {
+        defaultConfig = require(`${CONFIG_PATH}/common.js`);
+    } else if (fs.existsSync(`${CONFIG_PATH}/config.default.js`)) {
+        defaultConfig = require(`${CONFIG_PATH}/config.default.js`);
+    }
+
+    if (fs.existsSync(`${CONFIG_PATH}/config.${NODE_ENV}.js`)) {
+        envConfig = require(`${CONFIG_PATH}/config.${NODE_ENV}.js`);
+    }
+
+    const obj = defaultsDeep({}, envConfig, defaultConfig);
+    return async(ctx, next) => {
+        ctx.getConfig = function(name) {
             let arr = name.split('.');
             let result = obj;
             let i = 0;

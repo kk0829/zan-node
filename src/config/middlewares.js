@@ -33,10 +33,7 @@ module.exports = function (config) {
         fn: code(config.CODE_PATH)
     }, {
         name: 'config',
-        fn: zanConfig({
-            path: config.CONFIG_PATH,
-            NODE_ENV: config.NODE_ENV
-        })
+        fn: zanConfig(config)
     }, {
         name: 'seo',
         fn: seo({
