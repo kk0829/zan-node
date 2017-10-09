@@ -1,4 +1,4 @@
-import lodash from 'lodash';
+import defaultsDeep from 'lodash/defaultsDeep';
 import fs from 'fs';
 
 module.exports = function(config = {}) {
@@ -17,7 +17,7 @@ module.exports = function(config = {}) {
         envConfig = require(`${CONFIG_PATH}/config.${NODE_ENV}.js`);
     }
 
-    const obj = lodash.defaultsDeep({}, envConfig, defaultConfig);
+    const obj = defaultsDeep({}, envConfig, defaultConfig);
     return async(ctx, next) => {
         ctx.getConfig = function(name) {
             let arr = name.split('.');

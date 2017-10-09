@@ -38,7 +38,6 @@ class Zan {
             XSS_WHITELISTS: [],
             CDN_PATH: '//www.cdn.com',
             beforeLoadMiddlewares() {},
-            afterLoadMiddlewares() {},
             MIDDLEWARES_PATH: path.join(this.SERVER_ROOT, 'middlewares'),
             // iron 目录结构
             IRON_DIR: false,
@@ -118,7 +117,6 @@ class Zan {
             middlewareDebug(this.middlewares[i].name);
             this.app.use(this.middlewares[i].fn);
         }
-        this.config.afterLoadMiddlewares.call(this);
     }
 
     run() {
