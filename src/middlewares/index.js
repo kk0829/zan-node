@@ -1,14 +1,14 @@
-import favicon from '../middlewares/favicon';
-import zanStatic from '../middlewares/static';
+import favicon from './favicon';
+import zanStatic from './static';
 import koaHelmet from 'koa-helmet';
-import code from '../middlewares/code';
-import zanConfig from '../middlewares/config';
-import seo from '../middlewares/seo';
-import log from '../middlewares/log';
-import body from '../middlewares/body';
-import xss from '../middlewares/xss';
-import mixin from '../middlewares/mixin';
-import nunjucks from '../middlewares/nunjucks';
+import code from './code';
+import zanConfig from './config';
+import seo from './seo';
+import log from './log';
+import body from './body';
+import xss from './xss';
+import mixin from './mixin';
+import nunjucks from './nunjucks';
 
 module.exports = function (config) {
     return [{

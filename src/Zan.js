@@ -6,7 +6,7 @@ import defaultsDeep from 'lodash/defaultsDeep';
 import uniq from 'lodash/uniq';
 import ip from 'ip';
 import boxen from 'boxen';
-import middlewares from './config/middlewares';
+import middlewares from './middlewares';
 import router from './middlewares/router';
 import router2 from './middlewares/router2';
 import router3 from './middlewares/router3';
@@ -71,7 +71,7 @@ class Zan {
 
         this.loadVersionMap();
         this.run();
-
+        console.log(this);
         return this;
     }
 
