@@ -71,7 +71,7 @@ class Zan {
 
         this.loadVersionMap();
         this.run();
-        console.log(this);
+
         return this;
     }
 
