@@ -39,6 +39,7 @@ class Zan {
             CDN_PATH: '//www.cdn.com',
             beforeLoadMiddlewares() {},
             MIDDLEWARES_PATH: path.join(this.SERVER_ROOT, 'middlewares'),
+            MIDDLEWARES_CONFIG_PATH: path.join(this.SERVER_ROOT, 'config/middlewares.js'),
             // iron 目录结构
             IRON_DIR: false,
             SRC_PATH: path.join(this.SERVER_ROOT, 'src')

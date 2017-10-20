@@ -58,7 +58,13 @@ export default function (config) {
 
     return async (ctx, next) => {
         const config = ctx.app.config;
-        ctx.render = function (name, context = {}) {
+        ctx.render = async function (name, context = {}) {
+            if (ctx.beforeRenderFns) {
+                for (let i = 0; i < ctx.beforeRenderFns.length; i++) {
+                    await ctx.beforeRenderFns[i].call(ctx);
+                }
+            }
+            
             const state = ctx.getState();
             const globalState = defaultsDeep({
                 env: config.NODE_ENV,

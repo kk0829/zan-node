@@ -4,6 +4,10 @@ import querystring from 'querystring';
 import union from 'lodash/union';
 
 module.exports = async(ctx, next) => {
+    ctx.beforeRenderFns = ctx.beforeRenderFns || [];
+    ctx.pushBeforeRender = (fn) => {
+        if (typeof fn === 'function') ctx.beforeRenderFns.push(fn);
+    };
     ctx.state = ctx.state || {};
     ctx.state.global = ctx.state.global || {};
     ctx.hasState = key => ctx.state.hasOwnProperty(key);
