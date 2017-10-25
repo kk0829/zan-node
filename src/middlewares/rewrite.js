@@ -27,7 +27,7 @@ function rewrite(items) {
         debug('rewrite %s -> %s    %s', items[i][0], items[i][1], re);
     }
 
-    return function(ctx, next) {
+    return function rewrite(ctx, next) {
         const orig = ctx.url;
 
         for (let i = 0; i < arr.length; i++) {
