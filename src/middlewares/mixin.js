@@ -91,12 +91,20 @@ module.exports = async(ctx, next) => {
             msg
         };
     };
-    ctx.json = (status, data) => {
-        ctx.body = {
-            code: status.code,
-            msg: status.msg,
-            data
-        };
+    ctx.json = (status, data, extra) => {
+        if (extra) { // 三个参数情况，这3个参数分别为 code msg data
+            ctx.body = {
+                code: status,
+                msg: data,
+                data: extra
+            };
+        } else {
+            ctx.body = {
+                code: status.code,
+                msg: status.msg,
+                data
+            };
+        }
         return;
     };
 
