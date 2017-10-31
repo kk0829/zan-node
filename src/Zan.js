@@ -19,6 +19,12 @@ import Service from './base/Service';
 import Router from 'koa-router';
 import viewEnv from './middlewares/nunjucks/env';
 import rewrite from './middlewares/rewrite';
+import code from './middlewares/code';
+import body from './middlewares/body';
+import koaStatic from './middlewares/static';
+
+// 加载扩展
+import './extend/context';
 
 class Zan {
 
@@ -71,9 +77,33 @@ class Zan {
         this.app.env = this.NODE_ENV;
 
         this.loadVersionMap();
+        this.loadProjectConfig();
         this.run();
 
         return this;
+    }
+
+    // 加载项目配置信息
+    // config.default.js / common.js
+    // config.${NODE_ENV}.js
+    loadProjectConfig() {
+        const CONFIG_PATH = this.config.CONFIG_PATH;
+        const NODE_ENV = this.config.NODE_ENV;
+        let defaultConfig = {};
+        let envConfig = {};
+
+        if (fs.existsSync(`${CONFIG_PATH}/common.js`)) {
+            defaultConfig = require(`${CONFIG_PATH}/common.js`);
+        } else if (fs.existsSync(`${CONFIG_PATH}/config.default.js`)) {
+            defaultConfig = require(`${CONFIG_PATH}/config.default.js`);
+        }
+
+        if (fs.existsSync(`${CONFIG_PATH}/config.${NODE_ENV}.js`)) {
+            envConfig = require(`${CONFIG_PATH}/config.${NODE_ENV}.js`);
+        }
+
+        this.projectConfig = defaultsDeep({}, envConfig, defaultConfig);
+        this.app.projectConfig = this.projectConfig;
     }
 
     // 自动加载静态资源 Version 文件
@@ -181,5 +211,11 @@ exports.Controller = Controller;
 exports.Service = Service;
 exports.viewEnv = viewEnv;
 exports.rewrite = rewrite;
+exports.middlewares = {
+    code,
+    body,
+    koaStatic,
+    ironRouter: router3
+};
 
 export default Zan;

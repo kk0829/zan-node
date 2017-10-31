@@ -4,6 +4,24 @@ const isPlainObject = require('lodash/isPlainObject');
 const querystring = require('querystring');
 const context = require('koa/lib/context');
 
+/**
+ * context 扩展方法
+ */
+
+context.getConfig = function getConfig(name) {
+    if (!name) {
+        return this.app.projectConfig;
+    }
+    let arr = name.split('.');
+    let result = this.app.projectConfig;
+    let i = 0;
+    while (arr[i]) {
+        result = result[arr[i]];
+        i++;
+    }
+    return result;
+};
+
 context.pushBeforeRender = function pushBeforeRender(fn) {
     if (typeof fn === 'function') this.beforeRenderFns.push(fn);
 };
