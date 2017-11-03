@@ -2,7 +2,6 @@ import favicon from './favicon';
 import zanStatic from './static';
 import koaHelmet from 'koa-helmet';
 import code from './code';
-import zanConfig from './config';
 import seo from './seo';
 import log from './log';
 import body from './body';
@@ -31,9 +30,6 @@ module.exports = function (config) {
     }, {
         name: 'code',
         fn: code(config.CODE_PATH)
-    }, {
-        name: 'config',
-        fn: zanConfig(config)
     }, {
         name: 'seo',
         fn: seo({
