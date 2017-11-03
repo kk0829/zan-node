@@ -24,7 +24,7 @@ import body from './middlewares/body';
 import koaStatic from './middlewares/static';
 
 // 加载扩展
-import './extend/context';
+require('./extend/context');
 
 class Zan {
 
