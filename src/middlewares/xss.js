@@ -1,12 +1,26 @@
-import xss from 'xss';
-import isObject from 'lodash/isObject';
-import isString from 'lodash/isString';
+const xss = require('xss');
+const isObject = require('lodash/isObject');
+const isString = require('lodash/isString');
+const toRegexp = require('path-to-regexp');
 
-module.exports = function (options) {
+/**
+ * WHITELISTS 数据格式
+ [{
+    path: '/api/application/basic',
+    options: {
+        enableStyle: true
+    }
+ }];
+ */
+module.exports = function(options) {
+    let WHITELISTS = options.WHITELISTS;
+    for (let i = 0; i < WHITELISTS.length; i++) {
+        WHITELISTS[i].pathReg = toRegexp(WHITELISTS[i].path);
+    }
     return async(ctx, next) => {
         let query = ctx.query;
         let bodyData = ctx.request.body;
-        let one = options.WHITELISTS.find((item) => item.path === ctx.path);
+        let one = options.WHITELISTS.find((item) => item.pathReg.test(ctx.path));
         let wrapOptions = one ? one.options : {};
         const whiteList = xss.getDefaultWhiteList();
 
