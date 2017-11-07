@@ -23,10 +23,12 @@ import code from './middlewares/code';
 import body from './middlewares/body';
 import koaStatic from './middlewares/static';
 
+const Emitter = require('events');
+
 // 加载扩展
 require('./extend/context');
 
-class Zan {
+class Zan extends Emitter {
 
     get defaultConfig() {
         return {
@@ -53,6 +55,7 @@ class Zan {
     }
 
     constructor(config) {
+        super();
         this.config = config || {};
         this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
         this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
@@ -171,6 +174,7 @@ class Zan {
         this.app.on('error', this.config.ERROR_CALLBACK || defaultErrorCallback);
 
         this.app.listen(this.NODE_PORT, () => {
+            this.emit('start');
             if (this.NODE_ENV === 'development') {
                 let msg = `服务启动成功!
 
