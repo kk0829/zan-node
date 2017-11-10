@@ -1,5 +1,5 @@
-import remove from 'lodash/remove';
-import camelCase from 'lodash/camelCase';
+const remove = require('lodash/remove');
+const camelCase = require('lodash/camelCase');
 
 exports.parseRequest = (ctx) => {
     const requestPath = ctx.path;

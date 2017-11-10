@@ -1,27 +1,27 @@
-import path from 'path';
-import fs from 'fs';
-import Koa from 'koa';
-import debug from 'debug';
-import defaultsDeep from 'lodash/defaultsDeep';
-import uniq from 'lodash/uniq';
-import ip from 'ip';
-import boxen from 'boxen';
-import middlewares from './middlewares';
-import router from './middlewares/router';
-import router2 from './middlewares/router2';
-import router3 from './middlewares/router3';
-import pkg from '../package.json';
-import BusinessError from './base/BusinessError';
-import ParamsError from './base/ParamsError';
-import Validator from './base/Validator';
-import Controller from './base/Controller';
-import Service from './base/Service';
-import Router from 'koa-router';
-import viewEnv from './middlewares/nunjucks/env';
-import rewrite from './middlewares/rewrite';
-import code from './middlewares/code';
-import body from './middlewares/body';
-import koaStatic from './middlewares/static';
+const path = require('path');
+const fs = require('fs');
+const Koa = require('koa');
+const debug = require('debug');
+const defaultsDeep = require('lodash/defaultsDeep');
+const uniq = require('lodash/uniq');
+const ip = require('ip');
+const boxen = require('boxen');
+const middlewares = require('./middlewares');
+const router = require('./middlewares/router');
+const router2 = require('./middlewares/router2');
+const router3 = require('./middlewares/router3');
+const pkg = require('../package.json');
+const BusinessError = require('./base/BusinessError');
+const ParamsError = require('./base/ParamsError');
+const Validator = require('./base/Validator');
+const Controller = require('./base/Controller');
+const Service = require('./base/Service');
+const Router = require('koa-router');
+const viewEnv = require('./middlewares/nunjucks/env');
+const rewrite = require('./middlewares/rewrite');
+const code = require('./middlewares/code');
+const body = require('./middlewares/body');
+const koaStatic = require('./middlewares/static');
 
 const Emitter = require('events');
 
@@ -222,4 +222,4 @@ exports.middlewares = {
     ironRouter: router3
 };
 
-export default Zan;
+module.exports = Zan;

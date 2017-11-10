@@ -1,5 +1,5 @@
-import validator from 'validator';
-import ParamsError from './ParamsError';
+const validator = require('validator');
+const ParamsError = require('./ParamsError');
 
 const reduce = Function.bind.call(Function.call, Array.prototype.reduce);
 const isEnumerable = Function.bind.call(Function.call, Object.prototype.propertyIsEnumerable);

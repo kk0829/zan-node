@@ -9,4 +9,4 @@ class ParamsError extends Error {
     }
 }
 
-export default ParamsError;
+module.exports = ParamsError;

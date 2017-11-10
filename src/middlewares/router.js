@@ -1,6 +1,6 @@
-import Router from 'koa-router';
-import path from 'path';
-import fs from 'fs';
+const Router = require('koa-router');
+const path = require('path');
+const fs = require('fs');
 
 const router = new Router();
 

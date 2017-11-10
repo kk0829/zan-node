@@ -1,4 +1,4 @@
-import BaseClass from './BaseClass';
+const BaseClass = require('./BaseClass');
 
 class Service extends BaseClass {
     constructor(...args) {
@@ -6,4 +6,4 @@ class Service extends BaseClass {
     }
 };
 
-export default Service;
+module.exports = Service;
