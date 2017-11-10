@@ -1,10 +1,10 @@
-import path from 'path';
-import koaBody from 'zan-koa-body';
+const path = require('path');
+const koaBody = require('zan-koa-body');
 
 /**
  * strict {Boolean} If enabled, don't parse GET, HEAD, DELETE requests, default true
  */
-module.exports = function () {
+module.exports = function() {
     return koaBody({
         formidable: {
             uploadDir: path.join('/tmp')

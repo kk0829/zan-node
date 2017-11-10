@@ -4,4 +4,4 @@ class BaseClass extends Object {
     }
 }
 
-export default BaseClass;
+module.exports = BaseClass;

@@ -1,4 +1,4 @@
-import nunjucks from 'nunjucks';
+const nunjucks = require('nunjucks');
 
 function AutoEscapeExtension(_env) {
     this.tags = ['autoescape'];
@@ -34,4 +34,4 @@ function AutoEscapeExtension(_env) {
     };
 };
 
-export default AutoEscapeExtension;
+module.exports = AutoEscapeExtension;

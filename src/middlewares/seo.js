@@ -1,5 +1,5 @@
-import UA from 'zan-ua';
-import toRegexp from 'path-to-regexp';
+const UA = require('zan-ua');
+const toRegexp = require('path-to-regexp');
 
 module.exports = function(options) {
     const SEO_CONSTANTS = require(options.path);

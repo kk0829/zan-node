@@ -1,10 +1,10 @@
-import fs from 'fs';
-import path from 'path';
-import debug from 'debug';
-import glob from 'glob';
-import isPlainObject from 'lodash/isPlainObject';
-import isFunction from 'lodash/isFunction';
-import { parseRequest } from '../lib/util';
+const fs = require('fs');
+const path = require('path');
+const debug = require('debug');
+const glob = require('glob');
+const isPlainObject = require('lodash/isPlainObject');
+const isFunction = require('lodash/isFunction');
+const { parseRequest } = require('../lib/util');
 
 const routerDebug = debug('zan:router');
 

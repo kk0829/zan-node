@@ -9,4 +9,4 @@ class BusinessError extends Error {
     }
 }
 
-export default BusinessError;
+module.exports = BusinessError;

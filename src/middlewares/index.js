@@ -1,15 +1,15 @@
-import favicon from './favicon';
-import zanStatic from './static';
-import koaHelmet from 'koa-helmet';
-import code from './code';
-import seo from './seo';
-import log from './log';
-import body from './body';
-import xss from './xss';
-import mixin from './mixin';
-import nunjucks from './nunjucks';
+const favicon = require('./favicon');
+const zanStatic = require('./static');
+const koaHelmet = require('koa-helmet');
+const code = require('./code');
+const seo = require('./seo');
+const log = require('./log');
+const body = require('./body');
+const xss = require('./xss');
+const mixin = require('./mixin');
+const nunjucks = require('./nunjucks');
 
-module.exports = function (config) {
+module.exports = function(config) {
     return [{
         name: 'mixin',
         fn: mixin
