@@ -3,7 +3,6 @@ const fs = require('fs');
 const Koa = require('koa');
 const debug = require('debug');
 const defaultsDeep = require('lodash/defaultsDeep');
-const uniq = require('lodash/uniq');
 const ip = require('ip');
 const boxen = require('boxen');
 const middlewares = require('./middlewares');
@@ -22,8 +21,8 @@ const rewrite = require('./middlewares/rewrite');
 const code = require('./middlewares/code');
 const body = require('./middlewares/body');
 const koaStatic = require('./middlewares/static');
-
 const Emitter = require('events');
+const Loader = require('./lib/loader');
 
 // 加载扩展
 require('./extend/context');
@@ -79,55 +78,19 @@ class Zan extends Emitter {
         this.app.keys = this.config.KEYS;
         this.app.env = this.NODE_ENV;
 
-        this.loadVersionMap();
-        this.loadProjectConfig();
+        // 初始化加载器
+        this.loader = new Loader(this.config);
+
+        // 加载项目配置
+        this.app.projectConfig = this.loader.loadProjectConfig(this.config);
+
+        // 加载 Version 文件
+        this.config.VERSION_MAP = this.loader.loadVersionMap();
+
         this.run();
+        console.log(this.config);
 
         return this;
-    }
-
-    // 加载项目配置信息
-    // config.default.js / common.js
-    // config.${NODE_ENV}.js
-    loadProjectConfig() {
-        const CONFIG_PATH = this.config.CONFIG_PATH;
-        const NODE_ENV = this.config.NODE_ENV;
-        let defaultConfig = {};
-        let envConfig = {};
-
-        if (fs.existsSync(`${CONFIG_PATH}/common.js`)) {
-            defaultConfig = require(`${CONFIG_PATH}/common.js`);
-        } else if (fs.existsSync(`${CONFIG_PATH}/config.default.js`)) {
-            defaultConfig = require(`${CONFIG_PATH}/config.default.js`);
-        }
-
-        if (fs.existsSync(`${CONFIG_PATH}/config.${NODE_ENV}.js`)) {
-            envConfig = require(`${CONFIG_PATH}/config.${NODE_ENV}.js`);
-        }
-
-        this.projectConfig = defaultsDeep({}, envConfig, defaultConfig);
-        this.app.projectConfig = this.projectConfig;
-    }
-
-    // 自动加载静态资源 Version 文件
-    loadVersionMap() {
-        let versionFiles = fs.readdirSync(this.config.CONFIG_PATH)
-            .filter((item) => {
-                return /^version.*\.json$/.test(item);
-            });
-        let VERSION_LIST = [];
-        let VERSION_MAP = {};
-        for (let i = 0; i < versionFiles.length; i++) {
-            VERSION_LIST[i] = path.join(this.config.CONFIG_PATH, versionFiles[i]);
-        }
-
-        for (let i = 0; i < VERSION_LIST.length; i++) {
-            let parsed = path.parse(VERSION_LIST[i]);
-            VERSION_MAP[parsed.name] = require(VERSION_LIST[i]);
-        }
-
-        this.config.VERSION_MAP = VERSION_MAP;
-        this.config.VERSION_LIST = VERSION_LIST;
     }
 
     // 自动加载业务中间件
