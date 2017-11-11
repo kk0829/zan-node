@@ -29,66 +29,80 @@ require('./extend/context');
 
 class Zan extends Emitter {
 
+    // 默认配置
     get defaultConfig() {
+        const SERVER_ROOT = this.config.SERVER_ROOT;
         return {
             KEYS: ['im a newer secret', 'i like turtle'],
-            NODE_ENV: this.NODE_ENV,
-            NODE_PORT: this.NODE_PORT,
-            FAVICON_PATH: path.join(this.SERVER_ROOT, 'favicon.ico'),
-            STATIC_PATH: path.join(this.SERVER_ROOT, '../static'),
-            CODE_PATH: path.join(this.SERVER_ROOT, 'constants/code.js'),
-            CONFIG_PATH: path.join(this.SERVER_ROOT, 'config'),
-            SEO_PATH: path.join(this.SERVER_ROOT, 'constants/site.js'),
-            VIEW_PATH: path.join(this.SERVER_ROOT, 'views'),
-            ROUTERS_PATH: path.join(this.SERVER_ROOT, 'routes'),
-            CONTROLLERS_PATH: path.join(this.SERVER_ROOT, 'controllers'),
+            NODE_ENV: 'development',
+            NODE_PORT: 8201,
+            FAVICON_PATH: path.resolve(SERVER_ROOT, 'favicon.ico'),
+            STATIC_PATH: path.resolve(SERVER_ROOT, '../static'),
+            CODE_PATH: path.resolve(SERVER_ROOT, 'constants/code.js'),
+            CONFIG_PATH: path.resolve(SERVER_ROOT, 'config'),
+            SEO_PATH: path.resolve(SERVER_ROOT, 'constants/site.js'),
+            VIEW_PATH: path.resolve(SERVER_ROOT, 'views'),
+            ROUTERS_PATH: path.resolve(SERVER_ROOT, 'routes'),
+            CONTROLLERS_PATH: path.resolve(SERVER_ROOT, 'controllers'),
             XSS_WHITELISTS: [],
             CDN_PATH: '//www.cdn.com',
-            beforeLoadMiddlewares() {},
-            MIDDLEWARES_PATH: path.join(this.SERVER_ROOT, 'middlewares'),
-            MIDDLEWARES_CONFIG_PATH: path.join(this.SERVER_ROOT, 'config/middlewares.js'),
+            beforeLoadMiddlewares() { },
+            MIDDLEWARES_PATH: path.resolve(SERVER_ROOT, 'middlewares'),
+            MIDDLEWARES_CONFIG_PATH: path.resolve(SERVER_ROOT, 'config/middlewares.js'),
             // iron 目录结构
             IRON_DIR: false,
-            SRC_PATH: path.join(this.SERVER_ROOT, 'src')
+            SRC_PATH: path.resolve(SERVER_ROOT, 'src')
         };
+    }
+
+    // 环境变量配置
+    get envConfig() {
+        return {
+            NODE_ENV: process.env.NODE_ENV,
+            NODE_PORT: process.env.NODE_PORT
+        };
+    }
+
+    // 运行根目录
+    get defaultServerRoot() {
+        let defaultServerRoot;
+        if (/server_dist|bin/.test(process.mainModule.filename)) {
+            defaultServerRoot = path.resolve(process.cwd(), 'server_dist');
+        } else {
+            defaultServerRoot = path.resolve(process.cwd(), 'server');
+        }
+        return defaultServerRoot;
     }
 
     constructor(config) {
         super();
         this.config = config || {};
-        this.NODE_ENV = process.env.NODE_ENV || this.config.NODE_ENV || 'development';
-        this.NODE_PORT = process.env.NODE_PORT || this.config.NODE_PORT || 8201;
-        let defaultServerRoot;
-        if (this.NODE_ENV === 'development') {
-            defaultServerRoot = path.join(process.cwd(), 'server');
-        } else {
-            defaultServerRoot = path.join(process.cwd(), 'server_dist');
-        }
-        this.config.SERVER_ROOT = this.config.SERVER_ROOT || defaultServerRoot;
-        this.SERVER_ROOT = this.config.SERVER_ROOT;
+        this.config.SERVER_ROOT = this.config.SERVER_ROOT || this.defaultServerRoot;
         if (this.config.STATIC_PATH) {
-            this.config.STATIC_PATH = path.join(this.SERVER_ROOT, this.config.STATIC_PATH);
+            this.config.STATIC_PATH = path.resolve(this.config.SERVER_ROOT, this.config.STATIC_PATH);
         }
-        this.config.ZAN_VERSION = pkg.version;
-        this.config = defaultsDeep({}, config, this.defaultConfig);
+        this.config = defaultsDeep({}, this.envConfig, this.config, this.defaultConfig);
+        
+        process.env.NODE_ENV = this.config.NODE_ENV;
+        process.env.NODE_PORT = this.config.NODE_PORT;
+
         this.middlewares = middlewares(this.config);
 
         this.app = new Koa();
         this.app.config = this.config;
         this.app.keys = this.config.KEYS;
-        this.app.env = this.NODE_ENV;
+        this.app.env = this.config.NODE_ENV;
 
         // 初始化加载器
         this.loader = new Loader(this.config);
-
         // 加载项目配置
         this.app.projectConfig = this.loader.loadProjectConfig(this.config);
-
         // 加载 Version 文件
         this.config.VERSION_MAP = this.loader.loadVersionMap();
+        // ZanNode version
+        this.config.ZAN_VERSION = pkg.version;
 
         this.run();
-        console.log(this.config);
 
         return this;
     }
@@ -136,16 +150,16 @@ class Zan extends Emitter {
 
         this.app.on('error', this.config.ERROR_CALLBACK || defaultErrorCallback);
 
-        this.app.listen(this.NODE_PORT, () => {
+        this.app.listen(this.config.NODE_PORT, () => {
             this.emit('start');
-            if (this.NODE_ENV === 'development') {
+            if (this.config.NODE_ENV === 'development') {
                 let msg = `服务启动成功!
 
-- Zan框架版本：         ${pkg.version}
-- NODE_ENV:             ${this.NODE_ENV}
-- NODE_PORT:            ${this.NODE_PORT}
-- Local:                http://127.0.0.1:${this.NODE_PORT}
-- On Your Network:      http://${ip.address()}:${this.NODE_PORT}`;
+- Zan框架版本：         ${this.config.ZAN_VERSION}
+- NODE_ENV:             ${this.config.NODE_ENV}
+- NODE_PORT:            ${this.config.NODE_PORT}
+- Local:                http://127.0.0.1:${this.config.NODE_PORT}
+- On Your Network:      http://${ip.address()}:${this.config.NODE_PORT}`;
                 if (process.env.HTTP_PROXY && process.env.HTTPS_PROXY) {
                     msg += `\n- HTTP_PROXY            ${process.env.HTTP_PROXY}`;
                     msg += `\n- HTTPS_PROXY           ${process.env.HTTPS_PROXY}`;
@@ -162,8 +176,8 @@ class Zan extends Emitter {
                     borderStyle: 'classic'
                 }));
             } else {
-                console.log(`NODE_ENV = ${this.NODE_ENV}`);
-                console.log(`NODE_PORT = ${this.NODE_PORT}`);
+                console.log(`NODE_ENV = ${this.config.NODE_ENV}`);
+                console.log(`NODE_PORT = ${this.config.NODE_PORT}`);
             }
         });
     }
