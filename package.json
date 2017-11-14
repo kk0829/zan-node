@@ -1,6 +1,6 @@
 {
   "name": "zan-node",
-  "version": "0.0.38",
+  "version": "0.0.39",
   "description": "Zan Node Framework",
   "main": "./lib/Zan.js",
   "author": "kk",
