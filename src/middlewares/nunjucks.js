@@ -79,7 +79,13 @@ module.exports = function(config) {
         };
 
         // 针对 iron 定制
-        ctx.display = function(name, context = {}) {
+        ctx.display = async function(name, context = {}) {
+            if (ctx.beforeRenderFns) {
+                for (let i = 0; i < ctx.beforeRenderFns.length; i++) {
+                    await ctx.beforeRenderFns[i].call(ctx);
+                }
+            }
+
             const state = ctx.getState();
             const globalState = defaultsDeep({
                 env: config.NODE_ENV,
@@ -88,6 +94,7 @@ module.exports = function(config) {
             const wrapContext = defaultsDeep({}, context, state);
             delete wrapContext.global;
             wrapContext._global = JSON.stringify(globalState);
+            wrapContext.env = config.NODE_ENV;
             let arr = name.split('/');
             arr.splice(1, 0, 'views');
             name = arr.join('/');
