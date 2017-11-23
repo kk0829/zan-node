@@ -3,6 +3,7 @@ const defaultsDeep = require('lodash/defaultsDeep');
 const isPlainObject = require('lodash/isPlainObject');
 const querystring = require('querystring');
 const context = require('koa/lib/context');
+const mapKeysToSnakeCase = require('zan-utils/string/mapKeysToSnakeCase');
 
 /**
  * context 扩展方法
@@ -136,5 +137,14 @@ context.json = function(status, data, extra) {
             data
         };
     }
+    return;
+};
+
+context.r = function(code, msg, data) {
+    this.body = {
+        code,
+        msg,
+        data: mapKeysToSnakeCase(data)
+    };
     return;
 };
