@@ -31,7 +31,7 @@ if (fs.existsSync(path.resolve(BASE_PATH, 'src'))) {
  */
 let env = nunjucks.configure(VIEW_PATH, {
     autoescape: true,
-    throwOnUndefined: !(NODE_ENV === 'production'),
+    throwOnUndefined: !(NODE_ENV === 'production' || NODE_ENV === 'prod'),
     noCache: false
 });
 
