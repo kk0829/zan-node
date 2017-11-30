@@ -9,6 +9,7 @@ const middlewares = require('./middlewares');
 const router = require('./middlewares/router');
 const router2 = require('./middlewares/router2');
 const router3 = require('./middlewares/router3');
+const router4 = require('./middlewares/router4');
 const pkg = require('../package.json');
 const BusinessError = require('./base/BusinessError');
 const ParamsError = require('./base/ParamsError');
@@ -99,6 +100,8 @@ class Zan extends Emitter {
         this.app.projectConfig = this.loader.loadProjectConfig(this.config);
         // 加载 Version 文件
         this.config.VERSION_MAP = this.loader.loadVersionMap();
+        // 加载 Controllers 文件
+        this.app.controllers = this.loader.loadControllers();
         // ZanNode version
         this.config.ZAN_VERSION = pkg.version;
 
@@ -135,6 +138,10 @@ class Zan extends Emitter {
 
         // 自定义路由
         router({
+            app: this.app,
+            ROUTERS_PATH: this.config.ROUTERS_PATH
+        });
+        router4({
             app: this.app,
             ROUTERS_PATH: this.config.ROUTERS_PATH
         });
