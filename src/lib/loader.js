@@ -28,7 +28,13 @@ class Loader {
         } else if (fs.existsSync(`${CONFIG_PATH}/config.default.js`)) {
             defaultConfig = require(`${CONFIG_PATH}/config.default.js`);
         }
-        if (fs.existsSync(`${CONFIG_PATH}/config.${NODE_ENV}.js`)) {
+        if (NODE_ENV === 'production' || NODE_ENV === 'prod') {
+            if (fs.existsSync(`${CONFIG_PATH}/config.production.js`)) {
+                envConfig = require(`${CONFIG_PATH}/config.production.js`);
+            } else if (fs.existsSync(`${CONFIG_PATH}/config.prod.js`)) {
+                envConfig = require(`${CONFIG_PATH}/config.prod.js`);
+            }
+        } else if (fs.existsSync(`${CONFIG_PATH}/config.${NODE_ENV}.js`)) {
             envConfig = require(`${CONFIG_PATH}/config.${NODE_ENV}.js`);
         }
 
