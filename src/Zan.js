@@ -11,8 +11,11 @@ const router2 = require('./middlewares/router2');
 const router3 = require('./middlewares/router3');
 const router4 = require('./middlewares/router4');
 const pkg = require('../package.json');
-const BusinessError = require('./base/BusinessError');
-const ParamsError = require('./base/ParamsError');
+const {
+    BusinessError,
+    ParamsError,
+    Exception_404
+} = require('./base/Error');
 const Validator = require('./base/Validator');
 const Controller = require('./base/Controller');
 const Service = require('./base/Service');
@@ -47,7 +50,7 @@ class Zan extends Emitter {
             CONTROLLERS_PATH: path.resolve(SERVER_ROOT, 'controllers'),
             XSS_WHITELISTS: [],
             CDN_PATH: '//www.cdn.com',
-            beforeLoadMiddlewares() { },
+            beforeLoadMiddlewares() {},
             MIDDLEWARES_PATH: path.resolve(SERVER_ROOT, 'middlewares'),
             MIDDLEWARES_CONFIG_PATH: path.resolve(SERVER_ROOT, 'config/middlewares.js'),
             // iron 目录结构
@@ -83,7 +86,7 @@ class Zan extends Emitter {
             this.config.STATIC_PATH = path.resolve(this.config.SERVER_ROOT, this.config.STATIC_PATH);
         }
         this.config = defaultsDeep({}, this.envConfig, this.config, this.defaultConfig);
-        
+
         process.env.NODE_ENV = this.config.NODE_ENV;
         process.env.NODE_PORT = this.config.NODE_PORT;
 
@@ -197,6 +200,7 @@ module.exports = Zan;
 
 module.exports.BusinessError = BusinessError;
 module.exports.ParamsError = ParamsError;
+module.exports.Exception_404 = Exception_404;
 module.exports.Validator = Validator;
 module.exports.validator = new Validator();
 module.exports.router = new Router();
