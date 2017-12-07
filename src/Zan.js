@@ -9,7 +9,6 @@ const middlewares = require('./middlewares');
 const router = require('./middlewares/router');
 const router2 = require('./middlewares/router2');
 const router3 = require('./middlewares/router3');
-const router4 = require('./middlewares/router4');
 const pkg = require('../package.json');
 const {
     BusinessError,
@@ -141,11 +140,6 @@ class Zan extends Emitter {
 
         // 路由1：自定义路由方式1
         router({
-            app: this.app,
-            ROUTERS_PATH: this.config.ROUTERS_PATH
-        });
-        // 路由2：自定义路由方式2
-        router4({
             app: this.app,
             ROUTERS_PATH: this.config.ROUTERS_PATH
         });
