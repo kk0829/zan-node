@@ -1,7 +1,6 @@
 const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
-const debug = require('debug');
 const defaultsDeep = require('lodash/defaultsDeep');
 const { getInstance } = require('../lib/util');
 
@@ -79,6 +78,24 @@ class Loader {
         }
 
         return controllers;
+    }
+
+    // 自动加载所有 server/middlewares 下的中间件，挂载到 app.businessMiddlewares
+    loadMiddlewares() {
+        if (!fs.existsSync(this.config.MIDDLEWARES_PATH)) return;
+        let middlewares = [];
+        const files = glob.sync(`${this.config.MIDDLEWARES_PATH}/**/*.js`);
+        for (let i = 0; i < files.length; i++) {
+            const fn = require(files[i]);
+            if (typeof fn === 'function') {
+                middlewares.push({
+                    name: files[i].split(this.config.MIDDLEWARES_PATH + '/')[1].slice(0, -3).replace('/', '.'),
+                    fn: fn,
+                    type: 'business'
+                });
+            }
+        }
+        return middlewares;
     }
 }
 

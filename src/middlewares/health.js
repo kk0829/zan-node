@@ -1,5 +1,5 @@
 module.exports = function() {
-    return async(ctx, next) => {
+    return async function health(ctx, next) {
         if (ctx.path === '/_HB_') {
             if (ctx.query.service === 'online') {
                 ctx.status = 200;

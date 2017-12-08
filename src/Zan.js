@@ -54,7 +54,9 @@ class Zan extends Emitter {
             MIDDLEWARES_CONFIG_PATH: path.resolve(SERVER_ROOT, 'config/middlewares.js'),
             // iron 目录结构
             IRON_DIR: false,
-            SRC_PATH: path.resolve(SERVER_ROOT, 'src')
+            SRC_PATH: path.resolve(SERVER_ROOT, 'src'),
+            // 所有中间件（框架+业务中间件）可配，默认 false
+            AUTO_MIDDLEWARE: false
         };
     }
 
@@ -89,26 +91,28 @@ class Zan extends Emitter {
         process.env.NODE_ENV = this.config.NODE_ENV;
         process.env.NODE_PORT = this.config.NODE_PORT;
 
-        this.middlewares = middlewares(this.config);
-
         this.app = new Koa();
         this.app.config = this.config;
         this.app.keys = this.config.KEYS;
         this.app.env = this.config.NODE_ENV;
 
+        this.middlewares = middlewares(this.config);
         // 初始化加载器
         this.loader = new Loader(this.config);
         // 加载项目配置
-        this.app.projectConfig = this.loader.loadProjectConfig(this.config);
+        this.app.projectConfig = this.loader.loadProjectConfig();
         // 加载 Version 文件
         this.config.VERSION_MAP = this.loader.loadVersionMap();
         // 加载 Controllers 文件
         this.app.controllers = this.loader.loadControllers();
+        // 加载目录 server/middlewares 下的所有中间件
+        this.app.businessMiddlewares = this.loader.loadMiddlewares();
         // ZanNode version
         this.config.ZAN_VERSION = pkg.version;
+        // 把框架中间件跟业务中间件都合并到 allMiddlewares
+        this.allMiddlewares = [].concat(this.middlewares).concat(this.app.businessMiddlewares);
 
         this.run();
-
         return this;
     }
 
@@ -136,7 +140,11 @@ class Zan extends Emitter {
     }
 
     run() {
-        this.autoLoadMiddlewares();
+        if (this.config.AUTO_MIDDLEWARE) {
+
+        } else {
+            this.autoLoadMiddlewares();
+        }
 
         // 路由1：自定义路由方式1
         router({
@@ -151,7 +159,7 @@ class Zan extends Emitter {
         }
 
         let defaultErrorCallback = (err) => {
-            console.log('<ERROR>');
+            console.log('<defaultErrorCallback>');
             console.log(err);
         };
 
