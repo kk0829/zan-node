@@ -18,7 +18,7 @@ const {
 const Validator = require('./base/Validator');
 const Controller = require('./base/Controller');
 const Service = require('./base/Service');
-const Router = require('koa-router');
+const libRouter = require('./lib/router');
 const viewEnv = require('./middlewares/nunjucks/env');
 const rewrite = require('./middlewares/rewrite');
 const code = require('./middlewares/code');
@@ -54,7 +54,9 @@ class Zan extends Emitter {
             MIDDLEWARES_CONFIG_PATH: path.resolve(SERVER_ROOT, 'config/middlewares.js'),
             // iron 目录结构
             IRON_DIR: false,
-            SRC_PATH: path.resolve(SERVER_ROOT, 'src')
+            SRC_PATH: path.resolve(SERVER_ROOT, 'src'),
+            // 所有中间件（框架+业务中间件）可配，默认 false
+            AUTO_MIDDLEWARE: false
         };
     }
 
@@ -77,6 +79,26 @@ class Zan extends Emitter {
         return defaultServerRoot;
     }
 
+    get defaultMiddlewareConfg() {
+        return {
+            framework: [
+                'health',
+                'mixin',
+                'favicon',
+                'static',
+                'helmet',
+                'code',
+                'seo',
+                'nunjucks',
+                'log',
+                'body',
+                'xss'
+            ],
+            project: [],
+            custom: []
+        }
+    }
+
     constructor(config) {
         super();
         this.config = config || {};
@@ -89,26 +111,30 @@ class Zan extends Emitter {
         process.env.NODE_ENV = this.config.NODE_ENV;
         process.env.NODE_PORT = this.config.NODE_PORT;
 
-        this.middlewares = middlewares(this.config);
-
         this.app = new Koa();
         this.app.config = this.config;
         this.app.keys = this.config.KEYS;
         this.app.env = this.config.NODE_ENV;
 
+        this.middlewares = middlewares(this.config);
         // 初始化加载器
         this.loader = new Loader(this.config);
         // 加载项目配置
-        this.app.projectConfig = this.loader.loadProjectConfig(this.config);
+        this.app.projectConfig = this.loader.loadProjectConfig();
         // 加载 Version 文件
         this.config.VERSION_MAP = this.loader.loadVersionMap();
         // 加载 Controllers 文件
         this.app.controllers = this.loader.loadControllers();
+        // 加载目录 server/middlewares 下的所有中间件
+        this.projectMiddlewares = this.loader.loadMiddlewares();
+        // 加载中间配置
+        this.middlewareConfig = defaultsDeep({}, this.loader.loadMiddlewareConfig(), this.defaultMiddlewareConfg);
         // ZanNode version
         this.config.ZAN_VERSION = pkg.version;
+        // 把框架中间件跟业务中间件都合并到 allMiddlewares
+        this.allMiddlewares = [].concat(this.middlewares).concat(this.projectMiddlewares);
 
         this.run();
-
         return this;
     }
 
@@ -130,13 +156,61 @@ class Zan extends Emitter {
         }
 
         for (let i = 0; i < this.middlewares.length; i++) {
-            middlewareDebug(this.middlewares[i].name);
+            middlewareDebug('use %s', this.middlewares[i].name || '-');
             this.app.use(this.middlewares[i].fn);
         }
     }
 
+    autoLoadMiddlewares2() {
+        const middlewareDebug = debug('zan:middleware');
+
+        // 加载框架中间件
+        const frameworkMiddlewares = this.middlewareConfig.framework;
+        for (let i = 0; i < frameworkMiddlewares.length; i++) {
+            const middleware = this.allMiddlewares.find((item) => {
+                return item.name === frameworkMiddlewares[i]
+            });
+            if (middleware) {
+                middlewareDebug('use %s type %s', middleware.name || '-', middleware.type || '-');
+                this.app.use(middleware.fn);
+            }
+        }
+
+        // 加载项目中间件
+        const projectMiddlewares = this.middlewareConfig.project;
+        for (let i = 0; i < projectMiddlewares.length; i++) {
+            const middleware = this.allMiddlewares.find((item) => {
+                return item.name === projectMiddlewares[i];
+            });
+            if (middleware) {
+                middlewareDebug('use %s type %s', middleware.name || '-', middleware.type || '-');
+                this.app.use(middleware.fn);
+            }
+        }
+
+        const customMiddlewares = this.middlewareConfig.custom;
+        for (let i = 0; i < customMiddlewares.length; i++) {
+            let execute = [];
+            for (let j = 0; j < customMiddlewares[i].list.length; j++) {
+                const middleware = this.allMiddlewares.find((item) => {
+                    return item.name === customMiddlewares[i].list[j];
+                });
+                if (middleware) {
+                    execute.push(middleware.fn);
+                }
+            }
+            if (execute.length > 0) {
+                libRouter.use(customMiddlewares[i].match, execute);
+            }
+        }
+    }
+
     run() {
-        this.autoLoadMiddlewares();
+        if (this.config.AUTO_MIDDLEWARE) {
+            this.autoLoadMiddlewares2();
+        } else {
+            this.autoLoadMiddlewares();
+        }
 
         // 路由1：自定义路由方式1
         router({
@@ -151,7 +225,7 @@ class Zan extends Emitter {
         }
 
         let defaultErrorCallback = (err) => {
-            console.log('<ERROR>');
+            console.log('<defaultErrorCallback>');
             console.log(err);
         };
 
@@ -197,7 +271,7 @@ module.exports.ParamsError = ParamsError;
 module.exports.Exception_404 = Exception_404;
 module.exports.Validator = Validator;
 module.exports.validator = new Validator();
-module.exports.router = new Router();
+module.exports.router = libRouter;
 module.exports.Controller = Controller;
 module.exports.Service = Service;
 module.exports.viewEnv = viewEnv;

@@ -17,7 +17,8 @@ module.exports = function(options) {
     for (let i = 0; i < WHITELISTS.length; i++) {
         WHITELISTS[i].pathReg = toRegexp(WHITELISTS[i].path);
     }
-    return async(ctx, next) => {
+
+    return async (ctx, next) => {
         let query = ctx.query;
         let bodyData = ctx.request.body;
         let one = options.WHITELISTS.find((item) => item.pathReg.test(ctx.path));

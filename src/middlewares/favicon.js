@@ -1,7 +1,7 @@
 const resolve = require('path').resolve;
 const fs = require('fs');
 
-module.exports = function (path, options) {
+module.exports = function(path, options) {
     if (!path) {
         return (ctx, next) => {
             return next();
@@ -15,7 +15,7 @@ module.exports = function (path, options) {
     const maxAge = options.maxAge == null ? 86400000 : Math.min(Math.max(0, options.maxAge), 31556926000);
     const cacheControl = `public, max-age=${maxAge / 1000 | 0}`;
 
-    return (ctx, next) => {
+    return async function favicon(ctx, next) {
         if (!/favicon.ico/.test(ctx.path)) {
             return next();
         }

@@ -10,7 +10,7 @@ const koaStatic = require('koa-static');
  * @param {Boolean} opts.defer If true, serves after return next(), allowing any downstream middleware to respond first.
  * @param {Boolean} opts.gzip Try to serve the gzipped version of a file automatically when gzip is supported by a client and if the requested file with .gz extension exists. defaults to true.
  */
-module.exports = function(root, opts) {
+module.exports = function zanStatic(root, opts) {
     opts = opts || {};
     return koaStatic(root, opts);
 };
