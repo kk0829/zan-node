@@ -212,16 +212,15 @@ class Zan extends Emitter {
             this.autoLoadMiddlewares();
         }
 
-        // 路由1：自定义路由方式1
-        router({
-            app: this.app,
-            ROUTERS_PATH: this.config.ROUTERS_PATH
-        });
-        // 路由3：根据目录结构路由
         if (this.config.IRON_DIR) {
             this.app.use(router3(this.config));
         } else {
-            this.app.use(router2(this.config));
+            // 路由1：自定义路由方式1
+            router(this.app, this.config);
+            // 路由2：根据目录结构路由
+            this.app.use(router2(this.app));
+            this.app.use(libRouter.routes());
+            this.app.use(libRouter.allowedMethods());
         }
 
         let defaultErrorCallback = (err) => {
