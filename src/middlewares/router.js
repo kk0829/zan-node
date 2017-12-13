@@ -25,11 +25,10 @@ module.exports = function(app, config) {
                 const fileKey = requireContent[j][2].replace('.', '/') + '.js';
                 const funcName = requireContent[j][3];
                 const match = controllers[fileKey];
-                debug(httpVerb, requestPath, fileKey, funcName, match);
 
                 if (match) {
+                    debug(httpVerb, requestPath, fileKey, funcName, match);
                     router[httpVerb](requestPath, async function(ctx, next) {
-                        debug(match.controller);
                         if (isFunction(match.controller)) {
                             const Controller = match.controller;
                             const instance = new Controller(ctx);
