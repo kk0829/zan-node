@@ -1,8 +1,9 @@
 const BaseClass = require('./BaseClass');
 
 class Controller extends BaseClass {
-    constructor(...args) {
-        super(...args);
+    constructor(ctx) {
+        super(ctx);
+        this.ctx = ctx;
     }
 };
 

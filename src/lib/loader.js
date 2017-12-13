@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 const defaultsDeep = require('lodash/defaultsDeep');
-const { getInstance } = require('../lib/util');
 
 /**
  * 加载器
@@ -55,28 +54,26 @@ class Loader {
 
     // 自动加载所有 Controllers 文件，挂载到 app.controllers 下面
     loadControllers() {
-        if (!fs.existsSync(this.config.CONTROLLERS_PATH)) {
-            return;
-        }
         let controllers = {};
+        if (!fs.existsSync(this.config.CONTROLLERS_PATH)) {
+            return controllers;
+        }
         const files = glob.sync(`${this.config.CONTROLLERS_PATH}/**/*.js`);
 
         for (let i = 0; i < files.length; i++) {
-            const requireContent = require(files[i]);
-            const instance = getInstance(requireContent);
-            const arr = files[i].split('controllers/')[1].split('.js')[0].split('/');
-            let pointer = controllers;
-            let item
-            while (item = arr.shift()) {
-                if (arr.length === 0) {
-                    pointer[item] = instance;
-                } else {
-                    pointer[item] = pointer[item] || {};
-                    pointer = pointer[item];
-                }
+            let requireContent = require(files[i]);
+            let key = files[i].split(`${this.config.CONTROLLERS_PATH}/`)[1];
+
+            if (requireContent.default) {
+                controllers[key] = {
+                    controller: requireContent.default
+                };
+            } else {
+                controllers[key] = {
+                    controller: requireContent
+                };
             }
         }
-
         return controllers;
     }
 
