@@ -2,7 +2,6 @@ const fs = require('fs');
 const path = require('path');
 const glob = require('glob');
 const defaultsDeep = require('lodash/defaultsDeep');
-const { getInstance } = require('../lib/util');
 
 /**
  * 加载器
