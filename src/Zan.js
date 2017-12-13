@@ -47,6 +47,7 @@ class Zan extends Emitter {
             VIEW_PATH: path.resolve(SERVER_ROOT, 'views'),
             ROUTERS_PATH: path.resolve(SERVER_ROOT, 'routes'),
             CONTROLLERS_PATH: path.resolve(SERVER_ROOT, 'controllers'),
+            EXTEND_PATH: path.resolve(SERVER_ROOT, 'extends'),
             XSS_WHITELISTS: [],
             CDN_PATH: '//www.cdn.com',
             beforeLoadMiddlewares() {},
@@ -129,6 +130,7 @@ class Zan extends Emitter {
         this.projectMiddlewares = this.loader.loadMiddlewares();
         // 加载中间配置
         this.middlewareConfig = defaultsDeep({}, this.loader.loadMiddlewareConfig(), this.defaultMiddlewareConfg);
+        this.loader.loadContextExtend();
         // ZanNode version
         this.config.ZAN_VERSION = pkg.version;
         // 把框架中间件跟业务中间件都合并到 allMiddlewares
