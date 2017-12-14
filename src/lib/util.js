@@ -5,6 +5,7 @@ const isFunction = require('lodash/isFunction');
 const isPlainObject = require('lodash/isPlainObject');
 
 exports.parseRequest = (ctx) => {
+    ctx.finalPath = ctx.path;
     const requestPath = ctx.path;
     const method = ctx.method;
     let requestDesc = {
