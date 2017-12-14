@@ -1,3 +1,4 @@
+const path = require('path');
 const remove = require('lodash/remove');
 const camelCase = require('lodash/camelCase');
 const isFunction = require('lodash/isFunction');
@@ -48,6 +49,8 @@ exports.parseRequest = (ctx) => {
         } else if (pathArr.length === 2) {
             requestDesc.file = pathArr.join('/') + '.js';
             requestDesc.funcName = 'getIndexHtml';
+            // temp
+            ctx.finalPath = path.resolve(requestPath, 'index');
         } else if (pathArr.length >= 2) {
             requestDesc.file = pathArr.slice(0, -1).join('/') + '.js';
             requestDesc.funcName = camelCase(`${method} ${pathArr.slice(-1)} html`);
