@@ -3,6 +3,7 @@ const path = require('path');
 const defaultsDeep = require('lodash/defaultsDeep');
 const env = require('./nunjucks/env');
 const AutoEscapeExtension = require('./nunjucks/extensions/autoescape');
+const mapKeysToSnakeCase = require('zan-utils/string/mapKeysToSnakeCase');
 
 // 添加扩展
 env.addExtension('AutoEscapeExtension', new AutoEscapeExtension(env));
@@ -78,7 +79,13 @@ module.exports = function(config) {
             ctx.body = env.render(name, wrapContext);
         };
 
-        ctx.renderString = async function(name, context = {}) {
+        /**
+         * 返回 HTML 字符串
+         * @param  {String} name      模板路径
+         * @param  {Object} context   传递给模板的数据
+         * @param  {Boolean} camelCase  是否开启数据格式转换
+         */
+        ctx.renderString = async function(name, context = {}, snakeCase = false) {
             const state = ctx.getState();
             const globalState = defaultsDeep({
                 env: config.NODE_ENV,
@@ -89,7 +96,11 @@ module.exports = function(config) {
             wrapContext._global = JSON.stringify(globalState);
             wrapContext.env = config.NODE_ENV;
 
-            return env.render(name, wrapContext);
+            if (snakeCase) {
+                return env.render(name, mapKeysToSnakeCase(wrapContext));
+            } else {
+                return env.render(name, wrapContext);
+            }
         };
 
         // 针对 iron 定制
