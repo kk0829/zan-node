@@ -45,7 +45,7 @@
     "xss": "0.3.3",
     "zan-koa-body": "0.0.1",
     "zan-ua": "0.0.2",
-    "zan-utils": "1.1.4"
+    "zan-utils": "^1.1.4"
   },
   "devDependencies": {
     "ava": "0.20.0",
