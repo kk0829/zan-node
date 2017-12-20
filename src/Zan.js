@@ -131,6 +131,7 @@ class Zan extends Emitter {
         // 加载中间配置
         this.middlewareConfig = defaultsDeep({}, this.loader.loadMiddlewareConfig(), this.defaultMiddlewareConfg);
         this.loader.loadContextExtend();
+        this.loader.loadViewExtend();
         // ZanNode version
         this.config.ZAN_VERSION = pkg.version;
         // 把框架中间件跟业务中间件都合并到 allMiddlewares
