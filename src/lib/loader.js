@@ -123,7 +123,6 @@ class Loader {
         for (let item in globalsObj) {
             viewEnv.addGlobal(item, globalsObj[item]);
         }
-        console.log(viewEnv);
     }
 }
 
