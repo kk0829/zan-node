@@ -155,3 +155,22 @@ context.r = function(code, msg, data) {
     };
     return;
 };
+
+context.getSession = function(key) {
+    return key ? this.sessionCache[key] : this.sessionCache;
+};
+
+context.setSession = function(key, value) {
+    let plainObject = isPlainObject(key);
+    let data = {};
+    if (plainObject) {
+        data = key;
+    } else {
+        data[key] = value;
+    }
+    this.sessionCache = Object.assign(this.sessionCache || {}, data);
+};
+
+context.delSession = function(key) {
+    delete this.sessionCache[key];
+};
