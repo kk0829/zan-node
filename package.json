@@ -28,6 +28,7 @@
     "babel": "inherit"
   },
   "dependencies": {
+    "axios": "0.17.1",
     "boxen": "1.0.0",
     "co": "4.6.0",
     "debug": "2.6.8",
