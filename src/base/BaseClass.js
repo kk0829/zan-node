@@ -1,6 +1,9 @@
-class BaseClass extends Object {
-    constructor(...args) {
-        super(...args);
+const { Exception_404 } = require('./Error');
+
+class BaseClass {
+    constructor(ctx) {
+        this.ctx = ctx;
+        this.Exception_404 = Exception_404;
     }
 }
 
