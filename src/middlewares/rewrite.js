@@ -35,10 +35,14 @@ function rewrite(items) {
             const map = arr[i].map;
             const dest = arr[i].dest;
             if (m) {
-                ctx.url = dest.replace(/\$(\d+)|(?::(\w+))/g, (_, n, name) => {
+                let newUrl = dest.replace(/\$(\d+)|(?::(\w+))/g, (_, n, name) => {
                     if (name) return m[map[name].index + 1];
                     return m[n];
-                });
+                }) || '/';
+                if (!/^\//.test(newUrl)) {
+                    newUrl = '/' + newUrl;
+                }
+                ctx.url = newUrl;
                 debug('rewrite %s -> %s', orig, ctx.url);
                 return next().then(() => {
                     ctx.url = orig;
