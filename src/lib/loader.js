@@ -4,6 +4,8 @@ const glob = require('glob');
 const defaultsDeep = require('lodash/defaultsDeep');
 const context = require('koa/lib/context');
 const viewEnv = require('../middlewares/nunjucks/env');
+const util = require('./util');
+const coreExtendContext = require('../extend/context');
 
 /**
  * 加载器
@@ -109,9 +111,8 @@ class Loader {
         if (!fs.existsSync(`${this.config.EXTEND_PATH}/context.js`)) return;
         const content = require(`${this.config.EXTEND_PATH}/context.js`);
 
-        for (let item in content) {
-            context[item] = content[item];
-        }
+        util.completeAssign(context, coreExtendContext);
+        util.completeAssign(context, content);
     }
 
     // 加载 View 扩展
