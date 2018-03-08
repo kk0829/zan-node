@@ -108,11 +108,11 @@ class Loader {
 
     // 加载 context 扩展
     loadContextExtend() {
-        if (!fs.existsSync(`${this.config.EXTEND_PATH}/context.js`)) return;
-        const content = require(`${this.config.EXTEND_PATH}/context.js`);
-
         util.completeAssign(context, coreExtendContext);
-        util.completeAssign(context, content);
+        if (fs.existsSync(`${this.config.EXTEND_PATH}/context.js`)) {
+            const content = require(`${this.config.EXTEND_PATH}/context.js`);
+            util.completeAssign(context, content);
+        }
     }
 
     // 加载 View 扩展
