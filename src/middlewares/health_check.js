@@ -1,55 +1,49 @@
-const ajax = require('axios');
+const fs = require("fs");
+const filePath = process.cwd() + "/.health";
 
-module.exports = async(ctx, next) => {
-  if (ctx.path === '/_HB_') {
-    try {
-      const result = await ajax({
-        url: 'http://127.0.0.1:8680/_HB_',
-        data: ctx.query
-      });
-      if (result.status === 200 && result.data.code === 200) {
-        if (ctx.query.service === 'online') {
-          ctx.status = 200;
-          ctx.body = {
-            result: true,
-            code: 200,
-            message: null,
-            data: 'ok'
-          };
-        } else if (ctx.query.service === 'offline') {
-          ctx.status = 404;
-          ctx.body = {
-            result: true,
-            code: 404,
-            message: null,
-            data: 'ok'
-          };
-        } else {
-          ctx.status = 200;
-          ctx.body = {
-            result: true,
-            code: 200,
-            message: null,
-            data: 'ok'
-          };
-        }
-      } else {
-        ctx.status = 404;
-        ctx.body = {
-          result: true,
-          code: 404,
-          message: null,
-          data: 'ok'
-        };
+fs.writeFileSync(filePath, "online");
+
+function healthReturn(code, message = null) {
+  this.status = code;
+  this.body = {
+    result: true,
+    code,
+    message,
+    data: "ok"
+  };
+}
+
+module.exports = async (ctx, next) => {
+  ctx.healthReturn = healthReturn;
+  if (ctx.path === "/_HB_") {
+    if (ctx.query.service === "online") {
+      try {
+        fs.writeFileSync(filePath, "online");
+      } catch (e) {
+        console.log(e);
       }
-    } catch (e) {
-      ctx.status = 404;
-      ctx.body = {
-        result: true,
-        code: 404,
-        message: e.message,
-        data: 'ok'
-      };
+      ctx.healthReturn(200);
+    } else if (ctx.query.service === "offline") {
+      try {
+        await fs.writeFileSync(filePath, "offline");
+      } catch (e) {
+        console.log(e);
+      }
+      ctx.healthReturn(404);
+    } else {
+      try {
+        let data = fs.readFileSync(filePath, {
+          encoding: "utf8"
+        });
+        if (data === "offline") {
+          ctx.healthReturn(404);
+        } else {
+          ctx.healthReturn(200);
+        }
+      } catch (e) {
+        console.log(e);
+        ctx.healthReturn(404);
+      }
     }
   } else {
     await next();
